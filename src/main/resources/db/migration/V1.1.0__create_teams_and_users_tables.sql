@@ -1,0 +1,51 @@
+-- Sequences
+CREATE SEQUENCE IF NOT EXISTS dbo.teams_seq;
+CREATE SEQUENCE IF NOT EXISTS dbo.users_seq;
+CREATE SEQUENCE IF NOT EXISTS dbo.team_users_seq;
+
+-- Tabela de equipes
+CREATE TABLE IF NOT EXISTS dbo.teams
+(
+    id          INTEGER PRIMARY KEY DEFAULT nextval('dbo.teams_seq'),
+    name        VARCHAR(255) NOT NULL UNIQUE,
+    description VARCHAR(255),
+    is_active   BOOLEAN             DEFAULT true,
+    created_at  TIMESTAMP,
+    updated_at  TIMESTAMP
+);
+
+-- Tabela de usuários
+CREATE TABLE IF NOT EXISTS dbo.users
+(
+    id         INTEGER PRIMARY KEY DEFAULT nextval('dbo.users_seq'),
+    username   VARCHAR(100) NOT NULL UNIQUE,
+    password   VARCHAR(255),
+    email      VARCHAR(255),
+    is_active  BOOLEAN             DEFAULT true,
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP
+);
+
+-- Tabela de relacionamento usuário-equipe (um usuário pode estar em várias equipes)
+-- role:
+-- 'ADMIN',        -- Acesso total ao sistema
+-- 'TEAM_OWNER',   -- Dono do time (gerencia membros e pode deletar)
+-- 'DEV',          -- Desenvolvedor (cria/edita prompts)
+-- 'VIEWER'        -- Apenas visualização
+CREATE TABLE IF NOT EXISTS dbo.team_users
+(
+    id         INTEGER PRIMARY KEY  DEFAULT nextval('dbo.team_users_seq'),
+    team_id    INTEGER     NOT NULL REFERENCES dbo.teams (id),
+    user_id    INTEGER     NOT NULL REFERENCES dbo.users (id),
+    role       VARCHAR(30) NOT NULL DEFAULT 'VIEWER',
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    UNIQUE (team_id, user_id)
+);
+
+-- Índices
+CREATE INDEX IF NOT EXISTS idx_teams_active ON dbo.teams (is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_users_username ON dbo.users (username);
+CREATE INDEX IF NOT EXISTS idx_users_active ON dbo.users (is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_team_users_team_id ON dbo.team_users (team_id);
+CREATE INDEX IF NOT EXISTS idx_team_users_user_id ON dbo.team_users (user_id);
