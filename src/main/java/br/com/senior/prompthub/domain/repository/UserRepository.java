@@ -7,4 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends BaseRepository<User, Long> {
     boolean existsByUsernameAndIdNot(String name, long id);
+    
+    boolean existsByEmailAndIdNot(String email, long id);
 }

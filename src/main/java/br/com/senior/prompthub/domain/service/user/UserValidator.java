@@ -15,4 +15,10 @@ public class UserValidator {
             throw CustomException.badRequest("Já existe o username: " + name);
         }
     }
+
+    public void validateEmailUniqueness(String email, long id) {
+        if (userRepository.existsByEmailAndIdNot(email, id)) {
+            throw CustomException.badRequest("Já existe o email: " + email);
+        }
+    }
 }
