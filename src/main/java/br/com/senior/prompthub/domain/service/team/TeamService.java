@@ -6,6 +6,7 @@ import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
 import br.com.senior.prompthub.core.service.validate.CrudInterceptor;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.entity.TeamUser;
+import br.com.senior.prompthub.domain.entity.User;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
 import br.com.senior.prompthub.domain.repository.TeamRepository;
 import br.com.senior.prompthub.domain.repository.TeamUserRepository;
@@ -48,7 +49,7 @@ public class TeamService extends AbstractBaseService<Team, Long> {
     public Team create(Team team) {
         var members = team.cloneMembers();
         validateAndSaveTeam(team);
-        validateAndSaveMembers(team, members);
+        saveMembers(team, members);
         return team;
     }
 
@@ -68,15 +69,20 @@ public class TeamService extends AbstractBaseService<Team, Long> {
         teamRepository.save(team);
     }
 
-    private void validateAndSaveMembers(Team team, List<TeamUser> members) {
+    private void saveMembers(Team team, List<TeamUser> members) {
         members.forEach(member -> {
             member.setTeam(team);
             var user = member.getUser();
-            userValidator.validateUsernameUniqueness(user.getUsername(), team.getId());
+            validateUser(team, user);
             user.setPassword(null);
             userRepository.save(user);
         });
         teamUserRepository.saveAll(members);
         team.addAllMembers(members);
+    }
+
+    private void validateUser(Team team, User user) {
+        userValidator.validateUsernameUniqueness(user.getUsername(), team.getId());
+        userValidator.validateEmailUniqueness(user.getEmail(), team.getId());
     }
 }

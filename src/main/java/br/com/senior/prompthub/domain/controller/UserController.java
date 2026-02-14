@@ -11,6 +11,7 @@ import br.com.senior.prompthub.domain.enums.EntityStatus;
 import br.com.senior.prompthub.domain.service.user.UserService;
 import br.com.senior.prompthub.domain.spec.user.UserSearch;
 import br.com.senior.prompthub.domain.spec.user.UserSpecification;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -48,12 +49,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserCreateRequest userCreate) {
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest userCreate) {
         return crudController.create(userCreate).asDto(UserResponse.class);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @RequestBody UserCreateRequest userCreate) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserCreateRequest userCreate) {
         return crudController.update(id, userCreate).asDto(UserResponse.class);
     }
 

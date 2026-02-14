@@ -10,9 +10,15 @@ import org.springframework.stereotype.Component;
 public class TeamValidator {
     private final TeamRepository teamRepository;
 
-    public void validateTeamNameUniqueness(String name, long id) {
+    public void assertTeamNameUniqueness(String name, long id) {
         if (teamRepository.existsByNameAndIdNot(name, id)) {
             throw CustomException.badRequest("Já existe um time com o nome: " + name);
+        }
+    }
+
+    public void assertExistsTeamById(long id) {
+        if (!teamRepository.existsById(id)) {
+            throw CustomException.notFound("Time não encontrado com ID: " + id);
         }
     }
 }
