@@ -1,4 +1,4 @@
-package br.com.senior.prompthub.domain.dto.user;
+package br.com.senior.prompthub.domain.dto.team.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -9,9 +9,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCreateRequest {
+public class UserRequest {
     @NotBlank
     private String username;
+
     @Email
     private String email;
 }

@@ -1,4 +1,8 @@
 package br.com.senior.prompthub.domain.spec.team;
 
-public record TeamSearch(String query, Boolean active) {
+import br.com.senior.prompthub.domain.enums.EntityStatus;
+
+import java.util.List;
+
+public record TeamSearch(String query, List<EntityStatus> status) {
 }

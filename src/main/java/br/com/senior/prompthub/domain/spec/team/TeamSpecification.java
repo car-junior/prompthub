@@ -3,6 +3,8 @@ package br.com.senior.prompthub.domain.spec.team;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.entity.Team_;
 import br.com.senior.prompthub.core.specification.BaseSpecification;
+import br.com.senior.prompthub.domain.entity.User_;
+import br.com.senior.prompthub.domain.enums.EntityStatus;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -19,9 +21,10 @@ public class TeamSpecification implements BaseSpecification<Team, TeamSearch> {
     public Specification<Team> getPredicate(TeamSearch teamSearch) {
         return (root, query, builder) -> {
             final List<Predicate> predicates = new ArrayList<>();
+            predicates.add(builder.notEqual(root.get(Team_.STATUS), EntityStatus.DELETED));
 
-            if (isPresent(teamSearch.active())) {
-                predicates.add(builder.equal(root.get(Team_.IS_ACTIVE), teamSearch.active()));
+            if (isPresent(teamSearch.status())) {
+                predicates.add(root.get(User_.STATUS).in(teamSearch.status()));
             }
 
             if (isPresent(teamSearch.query())) {

@@ -1,4 +1,8 @@
 package br.com.senior.prompthub.domain.spec.user;
 
-public record UserSearch(String query, Boolean active) {
+import br.com.senior.prompthub.domain.enums.EntityStatus;
+
+import java.util.List;
+
+public record UserSearch(String query, List<EntityStatus> status) {
 }

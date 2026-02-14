@@ -2,6 +2,7 @@ package br.com.senior.prompthub.domain.entity;
 
 import br.com.senior.prompthub.config.audit.Auditable;
 import br.com.senior.prompthub.core.service.modelmapper.NoUpdateMapping;
+import br.com.senior.prompthub.domain.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,11 +30,13 @@ public class Team extends Auditable {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "is_active")
-    private Boolean isActive = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private EntityStatus status = EntityStatus.ACTIVE;
 
+    @NoUpdateMapping
     @Builder.Default
-    @OneToMany(mappedBy = "team", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY)
     private List<TeamUser> members = new ArrayList<>();
 
     public List<TeamUser> cloneMembers() {

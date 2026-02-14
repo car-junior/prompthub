@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS dbo.teams
     id          INTEGER PRIMARY KEY DEFAULT nextval('dbo.teams_seq'),
     name        VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255),
-    is_active   BOOLEAN             DEFAULT true,
+    status      VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
     created_at  TIMESTAMP,
     updated_at  TIMESTAMP
 );
@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS dbo.users
     id         INTEGER PRIMARY KEY DEFAULT nextval('dbo.users_seq'),
     username   VARCHAR(100) NOT NULL UNIQUE,
     password   VARCHAR(255),
-    email      VARCHAR(255),
-    is_active  BOOLEAN             DEFAULT true,
+    email      VARCHAR(255) NOT NULL UNIQUE,
+    status     VARCHAR(30) NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMP,
     updated_at TIMESTAMP
 );
@@ -44,8 +44,10 @@ CREATE TABLE IF NOT EXISTS dbo.team_users
 );
 
 -- Índices
-CREATE INDEX IF NOT EXISTS idx_teams_active ON dbo.teams (is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_teams_status ON dbo.teams (status);
+CREATE INDEX IF NOT EXISTS idx_teams_active ON dbo.teams (status) WHERE status = 'ACTIVE';
 CREATE INDEX IF NOT EXISTS idx_users_username ON dbo.users (username);
-CREATE INDEX IF NOT EXISTS idx_users_active ON dbo.users (is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_users_status ON dbo.users (status);
+CREATE INDEX IF NOT EXISTS idx_users_active ON dbo.users (status) WHERE status = 'ACTIVE';
 CREATE INDEX IF NOT EXISTS idx_team_users_team_id ON dbo.team_users (team_id);
 CREATE INDEX IF NOT EXISTS idx_team_users_user_id ON dbo.team_users (user_id);

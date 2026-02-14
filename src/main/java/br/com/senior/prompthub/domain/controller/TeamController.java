@@ -7,6 +7,7 @@ import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
 import br.com.senior.prompthub.domain.dto.team.response.TeamResponse;
 import br.com.senior.prompthub.domain.dto.team.request.TeamCreateRequest;
 import br.com.senior.prompthub.domain.entity.Team;
+import br.com.senior.prompthub.domain.enums.EntityStatus;
 import br.com.senior.prompthub.domain.service.team.TeamService;
 import br.com.senior.prompthub.domain.spec.team.TeamSearch;
 import br.com.senior.prompthub.domain.spec.team.TeamSpecification;
@@ -50,8 +51,8 @@ public class TeamController {
     }
 
     @PatchMapping("/{id}/change-status")
-    public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam Boolean isActive) {
-        teamService.changeStatus(id, isActive);
+    public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
+        teamService.changeStatus(id, status);
         return ResponseEntity.noContent().build();
     }
 }

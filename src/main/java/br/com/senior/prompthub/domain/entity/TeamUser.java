@@ -20,11 +20,11 @@ public class TeamUser extends Auditable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "team_users_seq")
     private long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

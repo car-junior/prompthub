@@ -6,10 +6,12 @@ import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
 import br.com.senior.prompthub.core.service.validate.CrudInterceptor;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.entity.TeamUser;
+import br.com.senior.prompthub.domain.enums.EntityStatus;
 import br.com.senior.prompthub.domain.repository.TeamRepository;
 import br.com.senior.prompthub.domain.repository.TeamUserRepository;
 import br.com.senior.prompthub.domain.repository.UserRepository;
 import br.com.senior.prompthub.domain.service.user.UserValidator;
+import br.com.senior.prompthub.infrastructure.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,6 @@ public class TeamService extends AbstractBaseService<Team, Long> {
     private final UserRepository userRepository;
     private final TeamUserRepository teamUserRepository;
     private final ModelMapperService<Team> modelMapperService;
-    private final TeamCrudInterceptorImpl teamCrudInterceptor;
 
     @Override
     protected BaseRepository<Team, Long> getRepository() {
@@ -39,7 +40,7 @@ public class TeamService extends AbstractBaseService<Team, Long> {
 
     @Override
     protected CrudInterceptor<Team, Long> crudInterceptor() {
-        return teamCrudInterceptor;
+        return null;
     }
 
     @Override
@@ -48,20 +49,22 @@ public class TeamService extends AbstractBaseService<Team, Long> {
         var members = team.cloneMembers();
         validateAndSaveTeam(team);
         validateAndSaveMembers(team, members);
-        team.addAllMembers(members);
         return team;
     }
 
     @Transactional
-    public void changeStatus(Long id, Boolean isActive) {
+    public void changeStatus(Long id, EntityStatus status) {
         var team = getById(id);
-        team.setIsActive(isActive);
+        if (team.getStatus().equals(EntityStatus.DELETED)) {
+            throw CustomException.badRequest("Não é possível alterar o status de um time deletado.");
+        }
+        team.setStatus(status);
         teamRepository.save(team);
     }
 
     private void validateAndSaveTeam(Team team) {
+        teamValidator.assertTeamNameUniqueness(team.getName(), team.getId());
         team.clearMembers();
-        teamValidator.validateTeamNameUniqueness(team.getName(), team.getId());
         teamRepository.save(team);
     }
 
@@ -70,8 +73,10 @@ public class TeamService extends AbstractBaseService<Team, Long> {
             member.setTeam(team);
             var user = member.getUser();
             userValidator.validateUsernameUniqueness(user.getUsername(), team.getId());
+            user.setPassword(null);
             userRepository.save(user);
         });
         teamUserRepository.saveAll(members);
+        team.addAllMembers(members);
     }
 }

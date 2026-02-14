@@ -1,5 +1,6 @@
-package br.com.senior.prompthub.domain.dto.user;
+package br.com.senior.prompthub.domain.dto.user.response;
 
+import br.com.senior.prompthub.domain.enums.EntityStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ public class UserResponse {
     private long id;
     private String username;
     private String email;
-    private Boolean isActive;
+    private EntityStatus status;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
 }
