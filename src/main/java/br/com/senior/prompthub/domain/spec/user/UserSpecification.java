@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.senior.prompthub.utils.CriteriaUtils.formatQueryToLike;
-import static br.com.senior.prompthub.utils.CriteriaUtils.lowerAndUnaccented;
+import static br.com.senior.prompthub.utils.CriteriaUtils.toLikeValue;
+import static br.com.senior.prompthub.utils.CriteriaUtils.toNormalize;
 import static br.com.senior.prompthub.utils.GeneralUtils.isPresent;
 
 @Component
@@ -27,8 +27,8 @@ public class UserSpecification implements BaseSpecification<User, UserSearch> {
             if (isPresent(userSearch.query())) {
                 predicates.add(
                         builder.or(
-                                builder.like(lowerAndUnaccented(builder, root.get(User_.USERNAME)), formatQueryToLike(userSearch.query())),
-                                builder.like(lowerAndUnaccented(builder, root.get(User_.EMAIL)), formatQueryToLike(userSearch.query()))
+                                builder.like(toNormalize(builder, root.get(User_.USERNAME)), toLikeValue(userSearch.query())),
+                                builder.like(toNormalize(builder, root.get(User_.EMAIL)), toLikeValue(userSearch.query()))
                         )
                 );
             }

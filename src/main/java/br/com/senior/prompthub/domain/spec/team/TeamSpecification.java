@@ -4,7 +4,6 @@ import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.entity.Team_;
 import br.com.senior.prompthub.core.specification.BaseSpecification;
 import br.com.senior.prompthub.domain.entity.User_;
-import br.com.senior.prompthub.domain.enums.EntityStatus;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -12,8 +11,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.senior.prompthub.utils.CriteriaUtils.formatQueryToLike;
-import static br.com.senior.prompthub.utils.CriteriaUtils.lowerAndUnaccented;
+import static br.com.senior.prompthub.utils.CriteriaUtils.toLikeValue;
+import static br.com.senior.prompthub.utils.CriteriaUtils.toNormalize;
 import static br.com.senior.prompthub.utils.GeneralUtils.isPresent;
 
 @Component
@@ -29,7 +28,7 @@ public class TeamSpecification implements BaseSpecification<Team, TeamSearch> {
             if (isPresent(teamSearch.query())) {
                 predicates.add(
                         builder.or(
-                                builder.like(lowerAndUnaccented(builder, root.get(Team_.NAME)), formatQueryToLike(teamSearch.query()))
+                                builder.like(toNormalize(builder, root.get(Team_.NAME)), toLikeValue(teamSearch.query()))
                         )
                 );
             }

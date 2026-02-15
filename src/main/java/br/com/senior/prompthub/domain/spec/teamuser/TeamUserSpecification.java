@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static br.com.senior.prompthub.utils.CriteriaUtils.formatQueryToLike;
-import static br.com.senior.prompthub.utils.CriteriaUtils.lowerAndUnaccented;
+import static br.com.senior.prompthub.utils.CriteriaUtils.toLikeValue;
+import static br.com.senior.prompthub.utils.CriteriaUtils.toNormalize;
 import static br.com.senior.prompthub.utils.GeneralUtils.isNotEmpty;
 import static br.com.senior.prompthub.utils.GeneralUtils.isPresent;
 
@@ -32,8 +32,8 @@ public class TeamUserSpecification {
             if (isPresent(teamUserSearch.query())) {
                 predicates.add(
                         builder.or(
-                                builder.like(lowerAndUnaccented(builder, root.get(TeamUser_.USER).get(User_.USERNAME)), formatQueryToLike(teamUserSearch.query())),
-                                builder.like(lowerAndUnaccented(builder, root.get(TeamUser_.USER).get(User_.EMAIL)), formatQueryToLike(teamUserSearch.query()))
+                                builder.like(toNormalize(builder, root.get(TeamUser_.USER).get(User_.USERNAME)), toLikeValue(teamUserSearch.query())),
+                                builder.like(toNormalize(builder, root.get(TeamUser_.USER).get(User_.EMAIL)), toLikeValue(teamUserSearch.query()))
                         )
                 );
             }
