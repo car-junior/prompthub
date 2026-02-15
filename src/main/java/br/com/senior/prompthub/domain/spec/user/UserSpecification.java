@@ -3,7 +3,6 @@ package br.com.senior.prompthub.domain.spec.user;
 import br.com.senior.prompthub.core.specification.BaseSpecification;
 import br.com.senior.prompthub.domain.entity.User;
 import br.com.senior.prompthub.domain.entity.User_;
-import br.com.senior.prompthub.domain.enums.EntityStatus;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -20,8 +19,6 @@ public class UserSpecification implements BaseSpecification<User, UserSearch> {
     public Specification<User> getPredicate(UserSearch userSearch) {
         return (root, query, builder) -> {
             final List<Predicate> predicates = new ArrayList<>();
-
-            predicates.add(builder.notEqual(root.get(User_.STATUS), EntityStatus.DELETED));
 
             if (isPresent(userSearch.status())) {
                 predicates.add(root.get(User_.STATUS).in(userSearch.status()));

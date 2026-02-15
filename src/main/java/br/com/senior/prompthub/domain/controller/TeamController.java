@@ -4,13 +4,17 @@ import br.com.senior.prompthub.core.controller.BaseCrudController;
 import br.com.senior.prompthub.core.dto.PageParams;
 import br.com.senior.prompthub.core.dto.PageResult;
 import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
-import br.com.senior.prompthub.domain.dto.team.response.TeamResponse;
+import br.com.senior.prompthub.domain.dto.team.request.AddMemberRequest;
 import br.com.senior.prompthub.domain.dto.team.request.TeamCreateRequest;
+import br.com.senior.prompthub.domain.dto.team.response.MemberResponse;
+import br.com.senior.prompthub.domain.dto.team.response.TeamResponse;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
+import br.com.senior.prompthub.domain.enums.UserRole;
 import br.com.senior.prompthub.domain.service.team.TeamService;
 import br.com.senior.prompthub.domain.spec.team.TeamSearch;
 import br.com.senior.prompthub.domain.spec.team.TeamSpecification;
+import br.com.senior.prompthub.domain.spec.teamuser.TeamUserSearch;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -53,6 +57,34 @@ public class TeamController {
     @PatchMapping("/{id}/change-status")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
         teamService.changeStatus(id, status);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{teamId}/members")
+    public ResponseEntity<PageResult<MemberResponse>> getTeamMembers(@PathVariable Long teamId,
+                                                                     PageParams pageParams,
+                                                                     TeamUserSearch search) {
+        var members = teamService.getMembers(teamId, pageParams, search);
+        return ResponseEntity.ok(members);
+    }
+
+    // Adicionar membros ao time
+    @PostMapping("/{teamId}/members")
+    public ResponseEntity<Void> addMembers(@PathVariable Long teamId, @Valid @RequestBody AddMemberRequest member) {
+        teamService.addMembers(teamId, member);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Atualizar role do membro
+    @PatchMapping("/{teamId}/members/{userId}")
+    public ResponseEntity<Void> updateMemberRole(@PathVariable Long teamId, @PathVariable Long userId, @RequestParam UserRole role) {
+        teamService.updateMemberRole(teamId, userId, role);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{teamId}/members/{userId}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long teamId, @PathVariable Long userId) {
+        teamService.deleteMember(teamId, userId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -5,6 +5,7 @@ import br.com.senior.prompthub.core.service.modelmapper.NoUpdateMapping;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @Builder(toBuilder = true)
+@SQLRestriction("status <> 'DELETED'")
 @Table(name = "teams", schema = "dbo")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(force = true, access = AccessLevel.PROTECTED)

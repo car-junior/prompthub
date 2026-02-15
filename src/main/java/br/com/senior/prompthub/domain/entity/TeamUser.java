@@ -29,7 +29,7 @@ public class TeamUser extends Auditable {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "role", nullable = false)
     private UserRole role = UserRole.VIEWER;
 
     @Override

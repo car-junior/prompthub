@@ -21,7 +21,6 @@ public class TeamSpecification implements BaseSpecification<Team, TeamSearch> {
     public Specification<Team> getPredicate(TeamSearch teamSearch) {
         return (root, query, builder) -> {
             final List<Predicate> predicates = new ArrayList<>();
-            predicates.add(builder.notEqual(root.get(Team_.STATUS), EntityStatus.DELETED));
 
             if (isPresent(teamSearch.status())) {
                 predicates.add(root.get(User_.STATUS).in(teamSearch.status()));

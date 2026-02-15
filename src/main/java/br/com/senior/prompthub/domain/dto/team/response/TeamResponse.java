@@ -4,7 +4,6 @@ import br.com.senior.prompthub.domain.enums.EntityStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -16,7 +15,6 @@ public class TeamResponse {
     private String name;
     private String description;
     private EntityStatus status;
-    private List<MemberResponse> members;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
 }
