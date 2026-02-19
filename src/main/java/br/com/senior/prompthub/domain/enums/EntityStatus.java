@@ -14,15 +14,4 @@ public enum EntityStatus {
         this.description = description;
     }
 
-    public boolean isOperational() {
-        return this == ACTIVE;
-    }
-
-    public boolean canBeReactivated() {
-        return this == INACTIVE;
-    }
-
-    public boolean isRemoved() {
-        return this == DELETED;
-    }
 }
