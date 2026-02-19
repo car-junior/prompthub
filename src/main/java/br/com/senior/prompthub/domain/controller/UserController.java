@@ -4,8 +4,8 @@ import br.com.senior.prompthub.core.controller.BaseCrudController;
 import br.com.senior.prompthub.core.dto.PageParams;
 import br.com.senior.prompthub.core.dto.PageResult;
 import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
-import br.com.senior.prompthub.domain.dto.user.UserCreateRequest;
-import br.com.senior.prompthub.domain.dto.user.UserResponse;
+import br.com.senior.prompthub.domain.dto.user.UserInput;
+import br.com.senior.prompthub.domain.dto.user.UserOutput;
 import br.com.senior.prompthub.domain.entity.User;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
 import br.com.senior.prompthub.domain.enums.GlobalRole;
@@ -40,23 +40,23 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<PageResult<UserResponse>> getAllUsers(PageParams pageParams, UserSearch search) {
-        return crudController.getAllSpec(pageParams, userSpecification, search).asPageDto(UserResponse.class);
+    public ResponseEntity<PageResult<UserOutput>> getAllUsers(PageParams pageParams, UserSearch search) {
+        return crudController.getAllSpec(pageParams, userSpecification, search).asPageDto(UserOutput.class);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
-        return crudController.getById(id).asDto(UserResponse.class);
+    public ResponseEntity<UserOutput> getUserById(@PathVariable Long id) {
+        return crudController.getById(id).asDto(UserOutput.class);
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest userCreate) {
-        return crudController.create(userCreate).asDto(UserResponse.class);
+    public ResponseEntity<UserOutput> createUser(@Valid @RequestBody UserInput userCreate) {
+        return crudController.create(userCreate).asDto(UserOutput.class);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserCreateRequest userCreate) {
-        return crudController.update(id, userCreate).asDto(UserResponse.class);
+    public ResponseEntity<UserOutput> updateUser(@PathVariable Long id, @Valid @RequestBody UserInput userCreate) {
+        return crudController.update(id, userCreate).asDto(UserOutput.class);
     }
 
     @PatchMapping("/{id}/change-status")
