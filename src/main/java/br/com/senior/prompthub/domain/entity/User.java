@@ -3,17 +3,8 @@ package br.com.senior.prompthub.domain.entity;
 import br.com.senior.prompthub.config.audit.Auditable;
 import br.com.senior.prompthub.core.service.modelmapper.NoUpdateMapping;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import br.com.senior.prompthub.domain.enums.GlobalRole;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,21 +35,33 @@ public class User extends Auditable {
     @Column(name = "username", nullable = false, unique = true, length = 100)
     private String username;
 
+    @NoUpdateMapping
     @Column(name = "password")
     private String password;
+
+    @Transient
+    private String tempPassword;
+
+    @NoUpdateMapping
+    @Column(name = "must_change_password", nullable = false)
+    private Boolean mustChangePassword = false;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private GlobalRole role = GlobalRole.USER;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private EntityStatus status = EntityStatus.ACTIVE;
 
+    //TODO: NAO FAZ SENTIDO CRIAR TEMS PARA USUÁRIO, DEVERIA SER O CONTRÁRIO, VER SE DEIXA ASSIM MESMO OU SE ALTERA A MODELAGEM
     @NoUpdateMapping
     @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<TeamUser> teams = new ArrayList<>();
-
 
     public List<TeamUser> cloneTeams() {
         return new ArrayList<>(teams);

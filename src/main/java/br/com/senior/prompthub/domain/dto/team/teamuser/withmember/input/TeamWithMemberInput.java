@@ -1,4 +1,4 @@
-package br.com.senior.prompthub.domain.dto.team.request;
+package br.com.senior.prompthub.domain.dto.team.teamuser.withmember.input;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamCreateRequest {
+public class TeamWithMemberInput {
     @NotBlank
     private String name;
 
@@ -20,5 +20,5 @@ public class TeamCreateRequest {
 
     @Valid
     @Builder.Default
-    private List<TeamUserRequest> members = new ArrayList<>();
+    private List<TeamUserInput> members = new ArrayList<>();
 }

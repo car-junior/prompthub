@@ -1,6 +1,6 @@
-package br.com.senior.prompthub.domain.dto.team.response;
+package br.com.senior.prompthub.domain.dto.team.teamuser.output;
 
-import br.com.senior.prompthub.domain.enums.UserRole;
+import br.com.senior.prompthub.domain.enums.TeamRole;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberResponse {
+public class TeamMemberOutput {
     private long id;
-    private UserResponse user;
-    private UserRole role;
+    private UserOutput user;
+    private TeamRole role;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;
 }

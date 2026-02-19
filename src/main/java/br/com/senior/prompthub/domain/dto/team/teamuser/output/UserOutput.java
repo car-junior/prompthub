@@ -1,4 +1,4 @@
-package br.com.senior.prompthub.domain.dto.team.response;
+package br.com.senior.prompthub.domain.dto.team.teamuser.output;
 
 import lombok.*;
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+class UserOutput {
     private Long id;
     private String username;
     private String email;

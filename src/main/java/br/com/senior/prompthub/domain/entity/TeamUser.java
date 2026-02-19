@@ -1,7 +1,7 @@
 package br.com.senior.prompthub.domain.entity;
 
 import br.com.senior.prompthub.config.audit.Auditable;
-import br.com.senior.prompthub.domain.enums.UserRole;
+import br.com.senior.prompthub.domain.enums.TeamRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +30,7 @@ public class TeamUser extends Auditable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private UserRole role = UserRole.VIEWER;
+    private TeamRole role = TeamRole.VIEWER;
 
     @Override
     public boolean equals(Object o) {

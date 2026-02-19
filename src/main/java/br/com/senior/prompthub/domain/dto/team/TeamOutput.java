@@ -1,4 +1,4 @@
-package br.com.senior.prompthub.domain.dto.user.response;
+package br.com.senior.prompthub.domain.dto.team;
 
 import br.com.senior.prompthub.domain.enums.EntityStatus;
 import lombok.*;
@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse {
+public class TeamOutput {
     private long id;
-    private String username;
-    private String email;
+    private String name;
+    private String description;
     private EntityStatus status;
     private LocalDateTime createdDate;
     private LocalDateTime lastModifiedDate;

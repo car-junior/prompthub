@@ -1,6 +1,6 @@
-package br.com.senior.prompthub.domain.dto.team.request;
+package br.com.senior.prompthub.domain.dto.team.teamuser.input;
 
-import br.com.senior.prompthub.domain.enums.UserRole;
+import br.com.senior.prompthub.domain.enums.TeamRole;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -9,10 +9,10 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddMemberRequest {
+public class AddMemberInput {
     @NotNull
     private Long userId;
 
     @NotNull
-    private UserRole role;
+    private TeamRole role;
 }

@@ -4,13 +4,15 @@ import br.com.senior.prompthub.core.controller.BaseCrudController;
 import br.com.senior.prompthub.core.dto.PageParams;
 import br.com.senior.prompthub.core.dto.PageResult;
 import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
-import br.com.senior.prompthub.domain.dto.team.request.AddMemberRequest;
-import br.com.senior.prompthub.domain.dto.team.request.TeamCreateRequest;
-import br.com.senior.prompthub.domain.dto.team.response.MemberResponse;
-import br.com.senior.prompthub.domain.dto.team.response.TeamResponse;
+import br.com.senior.prompthub.domain.dto.team.teamuser.input.AddMemberInput;
+import br.com.senior.prompthub.domain.dto.team.TeamInput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.input.TeamWithMemberInput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.output.TeamMemberOutput;
+import br.com.senior.prompthub.domain.dto.team.TeamOutput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.output.TeamWithMemberOutput;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
-import br.com.senior.prompthub.domain.enums.UserRole;
+import br.com.senior.prompthub.domain.enums.TeamRole;
 import br.com.senior.prompthub.domain.service.team.TeamService;
 import br.com.senior.prompthub.domain.spec.team.TeamSearch;
 import br.com.senior.prompthub.domain.spec.team.TeamSpecification;
@@ -35,23 +37,23 @@ public class TeamController {
     }
 
     @GetMapping("")
-    public ResponseEntity<PageResult<TeamResponse>> getAllTeams(PageParams pageParams, TeamSearch search) {
-        return crudController.getAllSpec(pageParams, teamSpecification, search).asPageDto(TeamResponse.class);
+    public ResponseEntity<PageResult<TeamOutput>> getAllTeams(PageParams pageParams, TeamSearch search) {
+        return crudController.getAllSpec(pageParams, teamSpecification, search).asPageDto(TeamOutput.class);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TeamResponse> getTeamById(@PathVariable Long id) {
-        return crudController.getById(id).asDto(TeamResponse.class);
+    public ResponseEntity<TeamOutput> getTeamById(@PathVariable Long id) {
+        return crudController.getById(id).asDto(TeamOutput.class);
     }
 
     @PostMapping
-    public ResponseEntity<TeamResponse> createTeam(@Valid @RequestBody TeamCreateRequest teamDTO) {
-        return crudController.create(teamDTO).asDto(TeamResponse.class);
+    public ResponseEntity<TeamOutput> createTeam(@Valid @RequestBody TeamInput teamCreate) {
+        return crudController.create(teamCreate).asDto(TeamOutput.class);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TeamResponse> updateTeam(@PathVariable Long id, @Valid @RequestBody TeamCreateRequest teamDTO) {
-        return crudController.update(id, teamDTO).asDto(TeamResponse.class);
+    public ResponseEntity<TeamOutput> updateTeam(@PathVariable Long id, @Valid @RequestBody TeamInput teamCreate) {
+        return crudController.update(id, teamCreate).asDto(TeamOutput.class);
     }
 
     @PatchMapping("/{id}/change-status")
@@ -60,24 +62,32 @@ public class TeamController {
         return ResponseEntity.noContent().build();
     }
 
+
+    @PostMapping("/with-members")
+    public ResponseEntity<TeamWithMemberOutput> createTeamWithMembers(@Valid @RequestBody TeamWithMemberInput teamCreate) {
+        var teamWithMembers = teamService.createWithMembers(teamCreate);
+        return ResponseEntity.ok(teamWithMembers);
+    }
+
+
     @GetMapping("/{teamId}/members")
-    public ResponseEntity<PageResult<MemberResponse>> getTeamMembers(@PathVariable Long teamId,
-                                                                     PageParams pageParams,
-                                                                     TeamUserSearch search) {
+    public ResponseEntity<PageResult<TeamMemberOutput>> getTeamMembers(@PathVariable Long teamId,
+                                                                       PageParams pageParams,
+                                                                       TeamUserSearch search) {
         var members = teamService.getMembers(teamId, pageParams, search);
         return ResponseEntity.ok(members);
     }
 
     // Adicionar membros ao time
     @PostMapping("/{teamId}/members")
-    public ResponseEntity<Void> addMembers(@PathVariable Long teamId, @Valid @RequestBody AddMemberRequest member) {
-        teamService.addMembers(teamId, member);
+    public ResponseEntity<Void> addMember(@PathVariable Long teamId, @Valid @RequestBody AddMemberInput member) {
+        teamService.addMember(teamId, member);
         return ResponseEntity.noContent().build();
     }
 
     // Atualizar role do membro
     @PatchMapping("/{teamId}/members/{userId}")
-    public ResponseEntity<Void> updateMemberRole(@PathVariable Long teamId, @PathVariable Long userId, @RequestParam UserRole role) {
+    public ResponseEntity<Void> updateMemberRole(@PathVariable Long teamId, @PathVariable Long userId, @RequestParam TeamRole role) {
         teamService.updateMemberRole(teamId, userId, role);
         return ResponseEntity.noContent().build();
     }

@@ -4,10 +4,11 @@ import br.com.senior.prompthub.core.controller.BaseCrudController;
 import br.com.senior.prompthub.core.dto.PageParams;
 import br.com.senior.prompthub.core.dto.PageResult;
 import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
-import br.com.senior.prompthub.domain.dto.user.request.UserCreateRequest;
-import br.com.senior.prompthub.domain.dto.user.response.UserResponse;
+import br.com.senior.prompthub.domain.dto.user.UserCreateRequest;
+import br.com.senior.prompthub.domain.dto.user.UserResponse;
 import br.com.senior.prompthub.domain.entity.User;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
+import br.com.senior.prompthub.domain.enums.GlobalRole;
 import br.com.senior.prompthub.domain.service.user.UserService;
 import br.com.senior.prompthub.domain.spec.user.UserSearch;
 import br.com.senior.prompthub.domain.spec.user.UserSpecification;
@@ -61,6 +62,12 @@ public class UserController {
     @PatchMapping("/{id}/change-status")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
         userService.changeStatus(id, status);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/change-role")
+    public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestParam GlobalRole role) {
+        userService.changeRole(id, role);
         return ResponseEntity.noContent().build();
     }
 }
