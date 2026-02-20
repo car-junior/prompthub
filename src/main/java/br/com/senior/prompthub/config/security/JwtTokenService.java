@@ -20,7 +20,7 @@ import java.util.function.Function;
 @Component
 public class JwtTokenService {
 
-    @Value("${jwt.secret:minha-chave-secreta-super-segura-com-pelo-menos-256-bits-para-hs256}")
+    @Value("${jwt.secret:fTiMhmbv3mTmgtcG7o1TjOwGbgfqxN7lphux2pFwBkU=}")
     private String MOMENT_SECRET;
 
     @Value("${jwt.expiration:86400000}") // 24 horas em ms

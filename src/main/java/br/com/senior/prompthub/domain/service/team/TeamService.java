@@ -7,8 +7,8 @@ import br.com.senior.prompthub.core.service.AbstractBaseService;
 import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
 import br.com.senior.prompthub.core.service.validate.CrudInterceptor;
 import br.com.senior.prompthub.domain.dto.team.teamuser.input.AddMemberInput;
-import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.input.TeamWithMemberInput;
 import br.com.senior.prompthub.domain.dto.team.teamuser.output.TeamMemberOutput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.input.TeamWithMemberInput;
 import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.output.TeamWithMemberOutput;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.entity.TeamUser;
@@ -26,7 +26,7 @@ import br.com.senior.prompthub.domain.spec.teamuser.TeamUserSearch;
 import br.com.senior.prompthub.domain.spec.teamuser.TeamUserSpecification;
 import br.com.senior.prompthub.infrastructure.exception.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,11 +43,11 @@ public class TeamService extends AbstractBaseService<Team, Long> {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final TeamUserService teamUserService;
-    private final PasswordGeneratorService passwordGeneratorService;
-    private final BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final TeamUserRepository teamUserRepository;
     private final TeamUserSpecification teamUserSpecification;
     private final ModelMapperService<Team> modelMapperService;
+    private final PasswordGeneratorService passwordGeneratorService;
 
     @Override
     protected BaseRepository<Team, Long> getRepository() {
@@ -121,23 +121,18 @@ public class TeamService extends AbstractBaseService<Team, Long> {
     private void saveMembers(Team team, List<TeamUser> members) {
         members.forEach(member -> {
             member.setTeam(team);
-            saveUser(team, member.getUser());
+            saveUser(member.getUser());
         });
         teamUserRepository.saveAll(members);
         team.addAllMembers(members);
     }
 
-    private void saveUser(Team team, User user) {
-        validateUser(team, user);
+    private void saveUser(User user) {
+        userValidator.validateUser(user);
         var tempPassword = passwordGeneratorService.generateTemporaryPassword();
         user.setPassword(passwordEncoder.encode(tempPassword));
         user.setTempPassword(tempPassword);
         user.setMustChangePassword(true);
         userRepository.save(user);
-    }
-
-    private void validateUser(Team team, User user) {
-        userValidator.validateUsernameUniqueness(user.getUsername(), team.getId());
-        userValidator.validateEmailUniqueness(user.getEmail(), team.getId());
     }
 }
