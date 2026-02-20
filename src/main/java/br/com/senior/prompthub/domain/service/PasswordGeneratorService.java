@@ -1,4 +1,4 @@
-package br.com.senior.prompthub.domain.service.auth;
+package br.com.senior.prompthub.domain.service;
 
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class PasswordGenerator {
+public class PasswordGeneratorService {
     
     public String generateTemporaryPassword() {
         // Senha forte aleatória: 12 caracteres

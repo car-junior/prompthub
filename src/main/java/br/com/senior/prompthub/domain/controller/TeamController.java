@@ -19,6 +19,7 @@ import br.com.senior.prompthub.domain.spec.team.TeamSpecification;
 import br.com.senior.prompthub.domain.spec.teamuser.TeamUserSearch;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -41,6 +42,7 @@ public class TeamController {
         return crudController.getAllSpec(pageParams, teamSpecification, search).asPageDto(TeamOutput.class);
     }
 
+    @PreAuthorize("@teamPermissionEvaluator.isTeamMember(#id)")
     @GetMapping("/{id}")
     public ResponseEntity<TeamOutput> getTeamById(@PathVariable Long id) {
         return crudController.getById(id).asDto(TeamOutput.class);
@@ -51,11 +53,13 @@ public class TeamController {
         return crudController.create(teamCreate).asDto(TeamOutput.class);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#id)")
     @PutMapping("/{id}")
     public ResponseEntity<TeamOutput> updateTeam(@PathVariable Long id, @Valid @RequestBody TeamInput teamCreate) {
         return crudController.update(id, teamCreate).asDto(TeamOutput.class);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#id)")
     @PatchMapping("/{id}/change-status")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
         teamService.changeStatus(id, status);
@@ -70,6 +74,7 @@ public class TeamController {
     }
 
 
+    @PreAuthorize("@teamPermissionEvaluator.isTeamMember(#teamId)")
     @GetMapping("/{teamId}/members")
     public ResponseEntity<PageResult<TeamMemberOutput>> getTeamMembers(@PathVariable Long teamId,
                                                                        PageParams pageParams,
@@ -78,20 +83,21 @@ public class TeamController {
         return ResponseEntity.ok(members);
     }
 
-    // Adicionar membros ao time
+    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     @PostMapping("/{teamId}/members")
     public ResponseEntity<Void> addMember(@PathVariable Long teamId, @Valid @RequestBody AddMemberInput member) {
         teamService.addMember(teamId, member);
         return ResponseEntity.noContent().build();
     }
 
-    // Atualizar role do membro
+    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     @PatchMapping("/{teamId}/members/{userId}")
     public ResponseEntity<Void> updateMemberRole(@PathVariable Long teamId, @PathVariable Long userId, @RequestParam TeamRole role) {
         teamService.updateMemberRole(teamId, userId, role);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     @DeleteMapping("/{teamId}/members/{userId}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long teamId, @PathVariable Long userId) {
         teamService.deleteMember(teamId, userId);

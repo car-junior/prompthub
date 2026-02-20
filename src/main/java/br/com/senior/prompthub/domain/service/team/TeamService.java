@@ -18,7 +18,7 @@ import br.com.senior.prompthub.domain.enums.TeamRole;
 import br.com.senior.prompthub.domain.repository.TeamRepository;
 import br.com.senior.prompthub.domain.repository.TeamUserRepository;
 import br.com.senior.prompthub.domain.repository.UserRepository;
-import br.com.senior.prompthub.domain.service.auth.PasswordGenerator;
+import br.com.senior.prompthub.domain.service.PasswordGeneratorService;
 import br.com.senior.prompthub.domain.service.teamuser.TeamUserService;
 import br.com.senior.prompthub.domain.service.user.UserService;
 import br.com.senior.prompthub.domain.service.user.UserValidator;
@@ -43,7 +43,7 @@ public class TeamService extends AbstractBaseService<Team, Long> {
     private final TeamRepository teamRepository;
     private final UserRepository userRepository;
     private final TeamUserService teamUserService;
-    private final PasswordGenerator passwordGenerator;
+    private final PasswordGeneratorService passwordGeneratorService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TeamUserRepository teamUserRepository;
     private final TeamUserSpecification teamUserSpecification;
@@ -129,7 +129,7 @@ public class TeamService extends AbstractBaseService<Team, Long> {
 
     private void saveUser(Team team, User user) {
         validateUser(team, user);
-        var tempPassword = passwordGenerator.generateTemporaryPassword();
+        var tempPassword = passwordGeneratorService.generateTemporaryPassword();
         user.setPassword(passwordEncoder.encode(tempPassword));
         user.setTempPassword(tempPassword);
         user.setMustChangePassword(true);

@@ -12,8 +12,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,16 +66,19 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<TeamUser> teams = new ArrayList<>();
 
-    public List<TeamUser> cloneTeams() {
-        return new ArrayList<>(teams);
-    }
-
-    public void addAllTeams(List<TeamUser> teamUsers) {
-        teams.addAll(teamUsers);
-    }
-
     public void clearTeams() {
         teams.clear();
+    }
+
+    public Collection<GrantedAuthority> getAuthorities() {
+        var authorities = new ArrayList<GrantedAuthority>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        authorities.addAll(getAuthoritiesTeamUser());
+        return authorities;
+    }
+
+    private List<SimpleGrantedAuthority> getAuthoritiesTeamUser() {
+        return teams.stream().map(it -> new SimpleGrantedAuthority("ROLE_" + it.getRole())).toList();
     }
 
     @Override

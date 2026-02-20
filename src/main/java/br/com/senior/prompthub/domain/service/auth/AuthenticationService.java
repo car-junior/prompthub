@@ -1,39 +1,31 @@
 package br.com.senior.prompthub.domain.service.auth;
 
 import br.com.senior.prompthub.domain.dto.auth.ChangePasswordInput;
-import br.com.senior.prompthub.domain.dto.auth.LoginInput;
 import br.com.senior.prompthub.domain.entity.User;
 import br.com.senior.prompthub.domain.repository.UserRepository;
-import br.com.senior.prompthub.domain.service.user.UserService;
 import br.com.senior.prompthub.infrastructure.exception.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
-    private final UserService userService;
+public class AuthenticationService {
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
-
-    @Transactional(readOnly = true)
-    public String authenticate(LoginInput loginInput) {
-        var user = getUserByUsername(loginInput.getUsername());
-
-        // Compara senha (texto plano) com hash do banco
-        assertMatchPassword(loginInput.getPassword(), user.getPassword());
-
-        return "Token JWT aqui";
-    }
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void changePassword(ChangePasswordInput changePasswordInput) {
-        var user = getUserByUsername(changePasswordInput.getUsername());
+        var user = getUserByUsernameOrEmail(changePasswordInput.getUsername());
         assertMatchPassword(changePasswordInput.getPassword(), user.getPassword());
         user.setPassword(passwordEncoder.encode(changePasswordInput.getNewPassword()));
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User getUserByUsernameOrEmail(String username) {
+        return userRepository.findByUsernameOrEmail(username).orElseThrow(() -> CustomException.notFound("Usuário informado não encontrado"));
     }
 
     private void assertMatchPassword(String loginPassword, String userPassword) {
@@ -42,8 +34,4 @@ public class AuthService {
         }
     }
 
-    private User getUserByUsername(String username) {
-        return userRepository.findByUsernameOrEmail(username)
-                .orElseThrow(() -> CustomException.notFound("Usuário informado não encontrado"));
-    }
 }
