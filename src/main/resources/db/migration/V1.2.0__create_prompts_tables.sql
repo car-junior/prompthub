@@ -4,37 +4,6 @@ CREATE SEQUENCE IF NOT EXISTS dbo.prompt_versions_seq;
 CREATE SEQUENCE IF NOT EXISTS dbo.prompt_history_seq;
 CREATE SEQUENCE IF NOT EXISTS dbo.prompt_dependencies_seq;
 
--- Enum para status das versões
--- Status (DRAFT → ACTIVE → INACTIVE/DEPRECATED → DELETED)
-DO
-$$
-    BEGIN
-        CREATE TYPE dbo.version_status AS ENUM (
-            'DRAFT',       -- Rascunho/em desenvolvimento
-            'ACTIVE',      -- Ativa e disponível para uso em produção
-            'INACTIVE',    -- Desativada temporariamente (pode ser reativada)
-            'DEPRECATED',  -- Marcada como obsoleta (não recomendada, mas ainda funcional)
-            'DELETED'      -- Deletada logicamente (não pode ser reativada)
-            );
-    EXCEPTION
-        WHEN duplicate_object THEN null;
-    END
-$$;
-
--- Enum para visibilidade dos prompts
-DO
-$$
-    BEGIN
-        CREATE TYPE dbo.prompt_visibility AS ENUM (
-            'PRIVATE',   -- Apenas membros do time
-            'INTERNAL',  -- Todos usuários autenticados
-            'PUBLIC'     -- Qualquer pessoa com o link
-            );
-    EXCEPTION
-        WHEN duplicate_object THEN null;
-    END
-$$;
-
 -- Tabela principal de prompts (pode ser de equipe ou pessoal)
 CREATE TABLE IF NOT EXISTS dbo.prompts
 (
@@ -53,15 +22,28 @@ CREATE TABLE IF NOT EXISTS dbo.prompts
     UNIQUE (owner_id, name)                           -- Nome único para cada usuário
 );
 
+
 -- Tabela de versões dos prompts
+
+-- status das versões:
+-- 'DRAFT',       -- Rascunho/em desenvolvimento
+-- 'ACTIVE',      -- Ativa e disponível para uso em produção
+-- 'INACTIVE',    -- Desativada temporariamente (pode ser reativada)
+-- 'DEPRECATED',  -- Marcada como obsoleta (não recomendada, mas ainda funcional)
+-- 'DELETED'      -- Deletada logicamente (não pode ser reativada)
+
+-- visibility das versões:
+-- 'PRIVATE', -- Apenas membros do time
+-- 'INTERNAL', -- Todos usuários autenticados
+-- 'PUBLIC' -- Qualquer pessoa com o link
 CREATE TABLE IF NOT EXISTS dbo.prompt_versions
 (
-    id           INTEGER PRIMARY KEY            DEFAULT nextval('dbo.prompt_versions_seq'),
-    prompt_id    INTEGER               NOT NULL REFERENCES dbo.prompts (id),
-    version      VARCHAR(50)           NOT NULL,
-    content      TEXT                  NOT NULL,
-    status       dbo.version_status    NOT NULL DEFAULT 'DRAFT',
-    visibility   dbo.prompt_visibility NOT NULL DEFAULT 'PRIVATE',
+    id           INTEGER PRIMARY KEY  DEFAULT nextval('dbo.prompt_versions_seq'),
+    prompt_id    INTEGER     NOT NULL REFERENCES dbo.prompts (id),
+    version      VARCHAR(50) NOT NULL,
+    content      TEXT        NOT NULL,
+    status       VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
+    visibility   VARCHAR(30) NOT NULL DEFAULT 'PRIVATE',
     change_notes TEXT,
     author_id    INTEGER REFERENCES dbo.users (id),
     created_at   TIMESTAMP,
@@ -73,9 +55,9 @@ CREATE TABLE IF NOT EXISTS dbo.prompt_versions
 CREATE TABLE IF NOT EXISTS dbo.prompt_history
 (
     id                INTEGER PRIMARY KEY DEFAULT nextval('dbo.prompt_history_seq'),
-    prompt_version_id INTEGER            NOT NULL REFERENCES dbo.prompt_versions (id),
-    old_status        dbo.version_status,
-    new_status        dbo.version_status NOT NULL,
+    prompt_version_id INTEGER     NOT NULL REFERENCES dbo.prompt_versions (id),
+    old_status        VARCHAR(30),
+    new_status        VARCHAR(30) NOT NULL,
     author_id         INTEGER REFERENCES dbo.users (id),
     created_at        TIMESTAMP,
     updated_at        TIMESTAMP,
