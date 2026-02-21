@@ -38,44 +38,45 @@ public class TeamController {
     }
 
     @GetMapping("")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin()")
     public ResponseEntity<PageResult<TeamOutput>> getAllTeams(PageParams pageParams, TeamSearch search) {
         return crudController.getAllSpec(pageParams, teamSpecification, search).asPageDto(TeamOutput.class);
     }
 
-    @PreAuthorize("@teamPermissionEvaluator.isTeamMember(#id)")
     @GetMapping("/{id}")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamMember(#id)")
     public ResponseEntity<TeamOutput> getTeamById(@PathVariable Long id) {
         return crudController.getById(id).asDto(TeamOutput.class);
     }
 
     @PostMapping
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin()")
     public ResponseEntity<TeamOutput> createTeam(@Valid @RequestBody TeamInput teamCreate) {
         return crudController.create(teamCreate).asDto(TeamOutput.class);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#id)")
     @PutMapping("/{id}")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#id)")
     public ResponseEntity<TeamOutput> updateTeam(@PathVariable Long id, @Valid @RequestBody TeamInput teamCreate) {
         return crudController.update(id, teamCreate).asDto(TeamOutput.class);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#id)")
     @PatchMapping("/{id}/change-status")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#id)")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
         teamService.changeStatus(id, status);
         return ResponseEntity.noContent().build();
     }
 
-
     @PostMapping("/with-members")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin()")
     public ResponseEntity<TeamWithMemberOutput> createTeamWithMembers(@Valid @RequestBody TeamWithMemberInput teamCreate) {
         var teamWithMembers = teamService.createWithMembers(teamCreate);
         return ResponseEntity.ok(teamWithMembers);
     }
 
-
-    @PreAuthorize("@teamPermissionEvaluator.isTeamMember(#teamId)")
     @GetMapping("/{teamId}/members")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamMember(#teamId)")
     public ResponseEntity<PageResult<TeamMemberOutput>> getTeamMembers(@PathVariable Long teamId,
                                                                        PageParams pageParams,
                                                                        TeamUserSearch search) {
@@ -83,22 +84,22 @@ public class TeamController {
         return ResponseEntity.ok(members);
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     @PostMapping("/{teamId}/members")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     public ResponseEntity<Void> addMember(@PathVariable Long teamId, @Valid @RequestBody AddMemberInput member) {
         teamService.addMember(teamId, member);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     @PatchMapping("/{teamId}/members/{userId}")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     public ResponseEntity<Void> updateMemberRole(@PathVariable Long teamId, @PathVariable Long userId, @RequestParam TeamRole role) {
         teamService.updateMemberRole(teamId, userId, role);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN') or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     @DeleteMapping("/{teamId}/members/{userId}")
+    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#teamId)")
     public ResponseEntity<Void> deleteMember(@PathVariable Long teamId, @PathVariable Long userId) {
         teamService.deleteMember(teamId, userId);
         return ResponseEntity.noContent().build();

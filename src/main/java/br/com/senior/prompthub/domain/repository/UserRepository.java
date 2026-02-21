@@ -13,8 +13,6 @@ public interface UserRepository extends BaseRepository<User, Long> {
     
     boolean existsByEmailAndIdNot(String email, long id);
 
-    Optional<User> findByUsername(String username);
-
-    @Query("SELECT u FROM User u WHERE u.username = :username OR u.email = :username")
+    @Query("SELECT u FROM User u WHERE (u.username = :username OR u.email = :username) and u.status = 'ACTIVE'")
     Optional<User> findByUsernameOrEmail(String username);
 }

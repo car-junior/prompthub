@@ -12,4 +12,8 @@ public enum GlobalRole {
     GlobalRole(String description) {
         this.description = description;
     }
+
+    public String getRoleAuthority() {
+        return "ROLE_" + this.name();
+    }
 }

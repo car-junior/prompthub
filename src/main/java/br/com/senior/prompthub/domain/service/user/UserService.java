@@ -10,7 +10,6 @@ import br.com.senior.prompthub.domain.enums.GlobalRole;
 import br.com.senior.prompthub.domain.repository.UserRepository;
 import br.com.senior.prompthub.infrastructure.exception.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService extends AbstractBaseService<User, Long> {
     private final UserValidator userValidator;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ModelMapperService<User> modelMapperService;
 
 
@@ -40,13 +38,6 @@ public class UserService extends AbstractBaseService<User, Long> {
 
     @Override
     @Transactional
-    public User create(User user) {
-        userValidator.validateUser(user);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return super.create(user);
-    }
-
-    @Override
     public User update(Long userId, User user) {
         user.setId(userId);
         userValidator.validateUser(user);
