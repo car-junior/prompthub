@@ -1,16 +1,16 @@
 package br.com.senior.prompthub.domain.spec.prompt;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+import java.util.List;
+
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class PromptSearch {
-    private String name;
-    private Long teamId;
+    private String query;
     private Long ownerId;
+    private List<Long> teamsId;
 }

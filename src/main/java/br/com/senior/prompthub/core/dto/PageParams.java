@@ -1,6 +1,8 @@
 package br.com.senior.prompthub.core.dto;
 
+import br.com.senior.prompthub.utils.GeneralUtils;
 import lombok.*;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.Objects;
@@ -30,5 +32,9 @@ public class PageParams {
 
     public String getSortName() {
         return Objects.requireNonNullElse(sortName, "id");
+    }
+
+    public PageRequest toPageable() {
+        return GeneralUtils.getPageRequest(this);
     }
 }

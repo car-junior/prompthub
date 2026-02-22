@@ -23,17 +23,18 @@ public class PromptController {
     private final BaseCrudController<Prompt, Long> crudController;
 
     public PromptController(PromptService promptService,
-                           ModelMapperService<Prompt> promptModelMapperService,
-                           PromptSpecification promptSpecification) {
+                            ModelMapperService<Prompt> promptModelMapperService,
+                            PromptSpecification promptSpecification) {
         this.promptService = promptService;
         this.promptSpecification = promptSpecification;
         this.crudController = new BaseCrudController<>(promptService, promptModelMapperService, Prompt.class);
     }
 
     @GetMapping
-    @PreAuthorize("@promptPermissionEvaluator.isAdmin()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PageResult<PromptOutput>> getAllPrompts(PageParams pageParams, PromptSearch search) {
-        return crudController.getAllSpec(pageParams, promptSpecification, search).asPageDto(PromptOutput.class);
+        var prompts = promptService.getAllPrompts(pageParams, search);
+        return ResponseEntity.ok(prompts);
     }
 
     @GetMapping("/{id}")
@@ -49,7 +50,7 @@ public class PromptController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@promptPermissionEvaluator.canEdit(#id, #promptInput)")
+    @PreAuthorize("@promptPermissionEvaluator.canEdit(#id)")
     public ResponseEntity<PromptOutput> updatePrompt(@PathVariable Long id, @Valid @RequestBody PromptInput promptInput) {
         return crudController.update(id, promptInput).asDto(PromptOutput.class);
     }

@@ -1,7 +1,8 @@
 spring:
   sql:
     init:
-      mode: always
+      mode: never  # Mude para 'always' quando quiser executar data.sql
+      continue-on-error: false
   application:
     name: '@project.name@'
   devtools:
@@ -11,7 +12,7 @@ spring:
     enabled: true
     out-of-order: true
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:

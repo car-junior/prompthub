@@ -44,7 +44,7 @@ public class PromptPermissionEvaluator extends BasePermissionEvaluator {
     }
 
     @Transactional(readOnly = true)
-    public boolean canEdit(Long promptId, PromptInput promptInput) {
+    public boolean canEdit(Long promptId) {
         UserPrincipal principal = getCurrentUser();
         if (principal == null) {
             return false;
@@ -62,6 +62,59 @@ public class PromptPermissionEvaluator extends BasePermissionEvaluator {
 
         return isTeamManagerOfPrompt(promptId, principal.getId());
     }
+
+//    public boolean canView(Long promptId) {
+//        log.debug("Verificando permissão de visualização para prompt {}", promptId);
+//
+//        UserPrincipal principal = getCurrentUser();
+//        if (principal == null) {
+//            log.warn("Nenhum usuário autenticado");
+//            return false;
+//        }
+//
+//        // ADMIN pode ver tudo
+//        if (isAdmin()) {
+//            log.debug("Usuário {} é ADMIN, pode ver qualquer prompt", principal.getUsername());
+//            return true;
+//        }
+//
+//        // Busca o prompt
+//        Prompt prompt = promptRepository.findById(promptId).orElse(null);
+//        if (prompt == null) {
+//            log.warn("Prompt {} não encontrado", promptId);
+//            return false;
+//        }
+//
+//        // Prompt de time - qualquer membro pode ver
+//        if (prompt.getTeamId() != null) {
+//            boolean isMember = teamUserRepository
+//                    .findByTeamIdAndUserId(prompt.getTeamId(), principal.getId())
+//                    .isPresent();
+//
+//            log.debug("Usuário {} {} membro do time {}",
+//                    principal.getUsername(),
+//                    isMember ? "É" : "NÃO é",
+//                    prompt.getTeamId());
+//
+//            return isMember;
+//        }
+//
+//        // Prompt pessoal - apenas o dono pode ver
+//        if (prompt.getOwnerId() != null) {
+//            boolean isOwner = prompt.getOwnerId().equals(principal.getId());
+//
+//            log.debug("Usuário {} {} dono do prompt pessoal {}",
+//                    principal.getUsername(),
+//                    isOwner ? "É" : "NÃO é",
+//                    promptId);
+//
+//            return isOwner;
+//        }
+//
+//        // Prompt sem teamId nem ownerId (não deveria acontecer)
+//        log.error("Prompt {} sem teamId nem ownerId", promptId);
+//        return false;
+//    }
 
     private boolean isTeamManagerOfPrompt(Long promptId, Long userId) {
         return promptRepository.isTeamManagerOfPrompt(promptId, userId, rolesAllowed);
