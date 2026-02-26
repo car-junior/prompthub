@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptHub - Sistema de Gerenciamento de Prompts</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>🤖 PromptHub</h1>
+            <div class="header-nav">
+                <button id="exploreHeaderBtn" class="btn btn-secondary" onclick="showExplorePublic()" style="display: none;">🌐 Explorar Prompts</button>
+                <div class="user-info" id="userInfo">
+                    <span id="username">Não logado</span>
+                    <button id="logoutBtn" class="btn btn-secondary" style="display: none;">Sair</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Public Explore Screen (sem login) -->
+        <div id="publicExploreScreen" class="screen">
+            <div class="public-hero">
+                <h2>🌐 Explore Prompts Públicos</h2>
+                <p>Descubra e utilize prompts compartilhados pela comunidade</p>
+                <button class="btn btn-primary" onclick="showLogin()">Entrar para criar seus prompts</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <input type="text" id="searchPublicPromptPublic" placeholder="Buscar por nome ou descrição..." onkeyup="filterPublicPromptsPublic()">
+                <select id="categoryFilterPublic" onchange="filterPublicPromptsPublic()">
+                    <option value="">Todas as categorias</option>
+                    <option value="backend">Backend</option>
+                    <option value="frontend">Frontend</option>
+                    <option value="devops">DevOps</option>
+                    <option value="qa">QA</option>
+                    <option value="outros">Outros</option>
+                </select>
+            </div>
+
+            <!-- Public Prompts List -->
+            <div id="publicPromptsListPublic" class="cards-grid">
+                <!-- Prompts públicos serão carregados aqui -->
+            </div>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen" class="screen">
+            <div class="login-box">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" id="loginUsername" value="joao.silva" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="loginPassword" value="senha123" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </form>
+                
+                <div class="quick-login">
+                    <p>Login rápido:</p>
+                    <button class="btn btn-small" onclick="quickLogin('admin')">Admin</button>
+                    <button class="btn btn-small" onclick="quickLogin('joao.silva')">João (OWNER)</button>
+                    <button class="btn btn-small" onclick="quickLogin('maria.santos')">Maria (DEV)</button>
+                    <button class="btn btn-small" onclick="quickLogin('pedro.costa')">Pedro (VIEWER)</button>
+                </div>
+                
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button class="btn btn-secondary btn-small" onclick="showExplorePublic()">← Voltar para Explorar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Screen -->
+        <div id="dashboardScreen" class="screen">
+            <!-- Navigation Tabs -->
+            <div class="tabs" id="navigationTabs">
+                <!-- Tabs serão carregadas dinamicamente baseado no perfil -->
+            </div>
+
+            <!-- Prompts Tab -->
+            <div id="promptsTab" class="tab-content active">
+                <div class="section-header">
+                    <h2>Prompts</h2>
+                    <button class="btn btn-primary" id="createPromptBtn" onclick="showCreatePromptModal()">+ Novo Prompt</button>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <select id="scopeFilter" onchange="filterPrompts()">
+                        <option value="all">Todos Acessíveis</option>
+                        <option value="my">Meus Prompts Pessoais</option>
+                        <option value="team">Por Time</option>
+                    </select>
+                    
+                    <select id="teamFilter" style="display: none;" onchange="filterPrompts()">
+                        <option value="">Selecione um time</option>
+                    </select>
+                    
+                    <input type="text" id="searchPrompt" placeholder="Buscar por nome..." onkeyup="filterPrompts()">
+                </div>
+
+                <!-- Prompts List -->
+                <div id="promptsList" class="cards-grid">
+                    <!-- Prompts serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Explore Tab -->
+            <div id="exploreTab" class="tab-content">
+                <div class="section-header">
+                    <h2>Explorar Prompts Públicos</h2>
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <span style="font-size: 0.9rem; color: #666;">Descubra prompts compartilhados pela comunidade</span>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters">
+                    <input type="text" id="searchPublicPrompt" placeholder="Buscar por nome ou descrição..." onkeyup="filterPublicPrompts()">
+                    <select id="categoryFilter" onchange="filterPublicPrompts()">
+                        <option value="">Todas as categorias</option>
+                        <option value="backend">Backend</option>
+                        <option value="frontend">Frontend</option>
+                        <option value="devops">DevOps</option>
+                        <option value="qa">QA</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+
+                <!-- Public Prompts List -->
+                <div id="publicPromptsList" class="cards-grid">
+                    <!-- Prompts públicos serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Teams Tab -->
+            <div id="teamsTab" class="tab-content">
+                <div class="section-header">
+                    <h2>Meus Times</h2>
+                    <button class="btn btn-primary" id="createTeamBtn" onclick="showCreateTeamModal()">+ Novo Time</button>
+                </div>
+                
+                <div id="teamsList" class="cards-grid">
+                    <!-- Times serão carregados aqui -->
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="usersTab" class="tab-content">
+                <div class="section-header">
+                    <h2 id="usersTabTitle">Usuários</h2>
+                    <button class="btn btn-primary" id="createUserBtn" onclick="showCreateUserModal()">+ Novo Usuário</button>
+                </div>
+                
+                <div id="usersList" class="table-container">
+                    <!-- Usuários serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Create/Edit Prompt -->
+    <div id="promptModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="promptModalTitle">Novo Prompt</h3>
+                <button class="close" onclick="closeModal('promptModal')">&times;</button>
+            </div>
+            <form id="promptForm">
+                <div class="form-group">
+                    <label>Tipo</label>
+                    <select id="promptType" onchange="togglePromptType()" required>
+                        <option value="team">Prompt de Time</option>
+                        <option value="personal">Prompt Pessoal</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" id="teamSelectGroup">
+                    <label>Time</label>
+                    <select id="promptTeamId" required>
+                        <option value="">Selecione um time</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="promptName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="promptDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('promptModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal View Prompt Versions -->
+    <div id="versionsModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="versionsModalTitle">Versões do Prompt</h3>
+                <button class="close" onclick="closeModal('versionsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 1rem;">
+                    <button class="btn btn-primary btn-small" id="createVersionBtn" onclick="showCreateVersionForm()">+ Nova Versão</button>
+                </div>
+                
+                <div id="createVersionForm" style="display: none; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px;">
+                    <form id="versionForm">
+                        <div class="form-group">
+                            <label>Conteúdo do Prompt</label>
+                            <textarea id="versionContent" rows="5" required placeholder="Digite o conteúdo da nova versão..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Descrição das Mudanças</label>
+                            <input type="text" id="versionDescription" placeholder="Ex: Melhorias na clareza das instruções">
+                        </div>
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="versionIsPublic" style="width: auto;">
+                                <span>Tornar esta versão pública (visível para todos no sistema)</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria (para versões públicas)</label>
+                            <select id="versionCategory">
+                                <option value="">Selecione uma categoria</option>
+                                <option value="backend">Backend</option>
+                                <option value="frontend">Frontend</option>
+                                <option value="devops">DevOps</option>
+                                <option value="qa">QA</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="submit" class="btn btn-primary btn-small">Salvar Versão</button>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="hideCreateVersionForm()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="versionsList">
+                    <!-- Versões serão carregadas aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal View Public Prompt Version Details -->
+    <div id="publicVersionModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="publicVersionModalTitle">Detalhes do Prompt</h3>
+                <button class="close" onclick="closeModal('publicVersionModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="publicVersionDetails">
+                    <!-- Detalhes da versão pública serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Create Team -->
+    <div id="teamModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Novo Time</h3>
+                <button class="close" onclick="closeModal('teamModal')">&times;</button>
+            </div>
+            <form id="teamForm">
+                <div class="form-group">
+                    <label>Nome</label>
+                    <input type="text" id="teamName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Descrição</label>
+                    <textarea id="teamDescription" rows="3"></textarea>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('teamModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Time</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Team Members -->
+    <div id="membersModal" class="modal">
+        <div class="modal-content modal-large">
+            <div class="modal-header">
+                <h3 id="membersModalTitle">Membros do Time</h3>
+                <button class="close" onclick="closeModal('membersModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <button class="btn btn-primary btn-small" onclick="showAddMemberForm()">+ Adicionar Membro</button>
+                
+                <div id="addMemberForm" style="display: none; margin-top: 1rem;">
+                    <form id="addMemberFormElement">
+                        <div class="form-row">
+                            <select id="newMemberUserId" required>
+                                <option value="">Selecione um usuário</option>
+                            </select>
+                            <select id="newMemberRole" required>
+                                <option value="TEAM_OWNER">Team Owner</option>
+                                <option value="DEV">Desenvolvedor</option>
+                                <option value="VIEWER">Visualizador</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary btn-small">Adicionar</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <table id="membersTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Usuário</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="membersTableBody">
+                        <!-- Membros serão carregados aqui -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
