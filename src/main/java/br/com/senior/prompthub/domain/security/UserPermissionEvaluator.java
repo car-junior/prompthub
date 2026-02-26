@@ -19,6 +19,11 @@ public class UserPermissionEvaluator extends BasePermissionEvaluator {
     }
 
     @Override
+    public boolean canList() {
+        return isAdmin();
+    }
+
+    @Override
     protected boolean canViewAsUser(Long userId) {
         if (isAdmin()) {
             return true;
