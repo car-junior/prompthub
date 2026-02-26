@@ -14,7 +14,7 @@ VALUES
     (nextval('dbo.users_seq'), 'joao.silva', '$2a$10$HUcHPkU5tewI94gQHnGDzuAB2vcbydUFjLOde1FWMOtmtdYr1ZSqO', 'joao.silva@email.com', 'USER', 'ACTIVE', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.users_seq'), 'maria.santos', '$2a$10$HUcHPkU5tewI94gQHnGDzuAB2vcbydUFjLOde1FWMOtmtdYr1ZSqO', 'maria.santos@email.com', 'USER', 'ACTIVE', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.users_seq'), 'pedro.costa', '$2a$10$HUcHPkU5tewI94gQHnGDzuAB2vcbydUFjLOde1FWMOtmtdYr1ZSqO', 'pedro.costa@email.com', 'USER', 'ACTIVE', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (nextval('dbo.users_seq'), 'ana.oliveira', '$2a$10$HUcHPkU5tewI94gQHnGDzuAB2vcbydUFjLOde1FWMOtmtdYr1ZSqO', 'ana.oliveira@email.com', 'USER', 'ACTIVE', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.users_seq'), 'julia.oliveira', '$2a$10$HUcHPkU5tewI94gQHnGDzuAB2vcbydUFjLOde1FWMOtmtdYr1ZSqO', 'ana.oliveira@email.com', 'USER', 'ACTIVE', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.users_seq'), 'carlos.lima', '$2a$10$HUcHPkU5tewI94gQHnGDzuAB2vcbydUFjLOde1FWMOtmtdYr1ZSqO', 'carlos.lima@email.com', 'USER', 'ACTIVE', false, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 -- ============================================
@@ -75,5 +75,5 @@ VALUES
     (nextval('dbo.prompts_seq'), NULL, (SELECT id FROM dbo.users WHERE username = 'joao.silva'), 'Refatoração Pessoal', 'Prompt para refatorar meus códigos pessoais', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.prompts_seq'), NULL, (SELECT id FROM dbo.users WHERE username = 'maria.santos'), 'Aprendizado de Design Patterns', 'Prompt para estudar padrões de projeto', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.prompts_seq'), NULL, (SELECT id FROM dbo.users WHERE username = 'pedro.costa'), 'Otimização de Queries', 'Prompt para otimizar queries SQL', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-    (nextval('dbo.prompts_seq'), NULL, (SELECT id FROM dbo.users WHERE username = 'ana.oliveira'), 'Code Review Pessoal', 'Prompt para revisar meus próprios códigos', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompts_seq'), NULL, (SELECT id FROM dbo.users WHERE username = 'julia.oliveira'), 'Code Review Pessoal', 'Prompt para revisar meus próprios códigos', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.prompts_seq'), NULL, (SELECT id FROM dbo.users WHERE username = 'carlos.lima'), 'Kubernetes Helper', 'Prompt para ajudar com configurações Kubernetes', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
