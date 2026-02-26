@@ -1,5 +1,6 @@
 package br.com.senior.prompthub.domain.spec.prompt;
 
+import br.com.senior.prompthub.domain.spec.UserContextAware;
 import lombok.*;
 
 import java.util.List;
@@ -9,8 +10,18 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromptSearch {
+public class PromptSearch implements UserContextAware {
     private String query;
-    private Long ownerId;
-    private List<Long> teamsId;
+    private Long userId;
+    private List<Long> teamsIds;
+
+    @Override
+    public void setCurrentUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    @Override
+    public void setAccessibleTeamIds(List<Long> teamsIds) {
+        this.teamsIds = teamsIds;
+    }
 }

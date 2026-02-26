@@ -18,27 +18,24 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/prompts")
 public class PromptController {
-    private final PromptService promptService;
     private final PromptSpecification promptSpecification;
     private final BaseCrudController<Prompt, Long> crudController;
 
     public PromptController(PromptService promptService,
                             ModelMapperService<Prompt> promptModelMapperService,
                             PromptSpecification promptSpecification) {
-        this.promptService = promptService;
         this.promptSpecification = promptSpecification;
         this.crudController = new BaseCrudController<>(promptService, promptModelMapperService, Prompt.class);
     }
 
     @GetMapping
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("@promptPermissionEvaluator.canList()")
     public ResponseEntity<PageResult<PromptOutput>> getAllPrompts(PageParams pageParams, PromptSearch search) {
-        var prompts = promptService.getAllPrompts(pageParams, search);
-        return ResponseEntity.ok(prompts);
+        return crudController.getAllSpec(pageParams, promptSpecification, search).asPageDto(PromptOutput.class);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@promptPermissionEvaluator.isAdmin()")
+    @PreAuthorize("@promptPermissionEvaluator.canView(#id)")
     public ResponseEntity<PromptOutput> getPromptById(@PathVariable Long id) {
         return crudController.getById(id).asDto(PromptOutput.class);
     }

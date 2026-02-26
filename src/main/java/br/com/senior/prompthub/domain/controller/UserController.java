@@ -15,15 +15,7 @@ import br.com.senior.prompthub.domain.spec.user.UserSpecification;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -41,32 +33,32 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("@userPermissionEvaluator.isAdmin()")
+    @PreAuthorize("@userPermissionEvaluator.canList()")
     public ResponseEntity<PageResult<UserOutput>> getAllUsers(PageParams pageParams, UserSearch search) {
         return crudController.getAllSpec(pageParams, userSpecification, search).asPageDto(UserOutput.class);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@userPermissionEvaluator.isUser(#id)")
+    @PreAuthorize("@userPermissionEvaluator.canView(#id)")
     public ResponseEntity<UserOutput> getUserById(@PathVariable Long id) {
         return crudController.getById(id).asDto(UserOutput.class);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@userPermissionEvaluator.isUser(#id)")
+    @PreAuthorize("@userPermissionEvaluator.canEdit(#id)")
     public ResponseEntity<UserOutput> updateUser(@PathVariable Long id, @Valid @RequestBody UserInput userCreate) {
         return crudController.update(id, userCreate).asDto(UserOutput.class);
     }
 
     @PatchMapping("/{id}/change-status")
-    @PreAuthorize("@userPermissionEvaluator.isAdmin()")
+    @PreAuthorize("@userPermissionEvaluator.canChangeStatus()")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
         userService.changeStatus(id, status);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("@userPermissionEvaluator.isAdmin()")
     @PatchMapping("/{id}/change-role")
+    @PreAuthorize("@userPermissionEvaluator.canChangeRole()")
     public ResponseEntity<Void> changeRole(@PathVariable Long id, @RequestParam GlobalRole role) {
         userService.changeRole(id, role);
         return ResponseEntity.noContent().build();

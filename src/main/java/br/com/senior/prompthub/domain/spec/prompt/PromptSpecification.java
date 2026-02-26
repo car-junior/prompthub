@@ -35,12 +35,12 @@ public class PromptSpecification implements BaseSpecification<Prompt, PromptSear
 
             List<Predicate> orPredicates = new ArrayList<>();
 
-            if (isPresent(search.getOwnerId())) {
-                orPredicates.add(builder.equal(root.get(Prompt_.OWNER).get(User_.ID), search.getOwnerId()));
+            if (isPresent(search.getUserId())) {
+                orPredicates.add(builder.equal(root.get(Prompt_.OWNER).get(User_.ID), search.getUserId()));
             }
 
-            if (isNotEmpty(search.getTeamsId())) {
-                orPredicates.add(root.get(Prompt_.TEAM).get(User_.ID).in(search.getTeamsId()));
+            if (isNotEmpty(search.getTeamsIds())) {
+                orPredicates.add(root.get(Prompt_.TEAM).get(User_.ID).in(search.getTeamsIds()));
             }
 
             if (!orPredicates.isEmpty()) {

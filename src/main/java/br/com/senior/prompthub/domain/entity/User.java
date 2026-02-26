@@ -66,6 +66,10 @@ public class User extends Auditable {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<TeamUser> teams = new ArrayList<>();
 
+    public List<Long> getTeamsIds() {
+        return teams.stream().map(it -> it.getTeam().getId()).toList();
+    }
+
     public Collection<GrantedAuthority> getAuthorities() {
         var authorities = new ArrayList<GrantedAuthority>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.name()));

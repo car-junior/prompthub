@@ -1,122 +1,70 @@
 package br.com.senior.prompthub.domain.security;
 
-import br.com.senior.prompthub.config.security.UserPrincipal;
 import br.com.senior.prompthub.domain.dto.prompt.input.PromptInput;
+import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.entity.User;
 import br.com.senior.prompthub.domain.enums.TeamRole;
 import br.com.senior.prompthub.domain.repository.PromptRepository;
-import br.com.senior.prompthub.domain.repository.TeamUserRepository;
-import lombok.RequiredArgsConstructor;
+import br.com.senior.prompthub.domain.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.EnumSet;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Bean que avalia permissões relacionadas a times.
  * Usado nas anotações @PreAuthorize dos controllers.
  */
 @Slf4j
-@RequiredArgsConstructor
 @Component("promptPermissionEvaluator")
 public class PromptPermissionEvaluator extends BasePermissionEvaluator {
     private final PromptRepository promptRepository;
-    private final TeamUserRepository teamUserRepository;
-    private final EnumSet<TeamRole> rolesAllowed = EnumSet.of(TeamRole.TEAM_OWNER, TeamRole.DEV);
 
-    @Transactional(readOnly = true)
-    public boolean canCreate(PromptInput promptInput) {
-        if (promptInput.getTeam() == null) {
-            log.info("Prompt sem time, permitindo criação");
-            return true; // Permite criação de prompt sem time
-        }
-
-        UserPrincipal principal = getCurrentUser();
-        if (principal == null) {
-            return false;
-        }
-
-        var teamUser = teamUserRepository.findByTeamIdAndUserId(promptInput.getTeam().getId(), principal.getId());
-
-        return teamUser.map(it -> rolesAllowed.contains(it.getRole())).orElse(false);
+    public PromptPermissionEvaluator(UserRepository userRepository, PromptRepository promptRepository) {
+        super(userRepository);
+        this.promptRepository = promptRepository;
     }
 
-    @Transactional(readOnly = true)
-    public boolean canEdit(Long promptId) {
-        UserPrincipal principal = getCurrentUser();
-        if (principal == null) {
-            return false;
-        }
+    @Override
+    protected boolean canViewAsUser(Long promptId) {
+        var canView = new AtomicBoolean(false);
+        promptRepository.findById(promptId).ifPresent(prompt -> {
+            var ownerId = Optional.ofNullable(prompt.getOwner()).map(User::getId).orElse(null);
+            var teamId = Optional.ofNullable(prompt.getTeam()).map(Team::getId).orElse(null);
+            canView.set(canAccessResource(ownerId, teamId, TeamRole.VIEWER, TeamRole.DEV, TeamRole.TEAM_OWNER));
+        });
+        return canView.get();
+    }
 
-        var prompt = promptRepository.findById(promptId).get();
-
-        var ownerId = Optional.ofNullable(prompt.getOwner()).map(User::getId).orElse(null);
-
-        // Permite edição se o usuário for o dono do prompt
-        if (principal.getId().equals(ownerId)) {
-            log.info("Usuário é dono do prompt, permitindo edição");
+    @Override
+    protected boolean canCreateAsUser(Object promptInput) {
+        var prompt = (PromptInput) promptInput;
+        if (prompt.getTeam() == null) {
             return true;
         }
-
-        return isTeamManagerOfPrompt(promptId, principal.getId());
+        return canAccessResource(null, prompt.getTeam().getId(), TeamRole.DEV, TeamRole.TEAM_OWNER);
     }
 
-//    public boolean canView(Long promptId) {
-//        log.debug("Verificando permissão de visualização para prompt {}", promptId);
-//
-//        UserPrincipal principal = getCurrentUser();
-//        if (principal == null) {
-//            log.warn("Nenhum usuário autenticado");
-//            return false;
-//        }
-//
-//        // ADMIN pode ver tudo
-//        if (isAdmin()) {
-//            log.debug("Usuário {} é ADMIN, pode ver qualquer prompt", principal.getUsername());
-//            return true;
-//        }
-//
-//        // Busca o prompt
-//        Prompt prompt = promptRepository.findById(promptId).orElse(null);
-//        if (prompt == null) {
-//            log.warn("Prompt {} não encontrado", promptId);
-//            return false;
-//        }
-//
-//        // Prompt de time - qualquer membro pode ver
-//        if (prompt.getTeamId() != null) {
-//            boolean isMember = teamUserRepository
-//                    .findByTeamIdAndUserId(prompt.getTeamId(), principal.getId())
-//                    .isPresent();
-//
-//            log.debug("Usuário {} {} membro do time {}",
-//                    principal.getUsername(),
-//                    isMember ? "É" : "NÃO é",
-//                    prompt.getTeamId());
-//
-//            return isMember;
-//        }
-//
-//        // Prompt pessoal - apenas o dono pode ver
-//        if (prompt.getOwnerId() != null) {
-//            boolean isOwner = prompt.getOwnerId().equals(principal.getId());
-//
-//            log.debug("Usuário {} {} dono do prompt pessoal {}",
-//                    principal.getUsername(),
-//                    isOwner ? "É" : "NÃO é",
-//                    promptId);
-//
-//            return isOwner;
-//        }
-//
-//        // Prompt sem teamId nem ownerId (não deveria acontecer)
-//        log.error("Prompt {} sem teamId nem ownerId", promptId);
-//        return false;
-//    }
+    @Override
+    protected boolean canEditAsUser(Long promptId) {
+        var canAccess = new AtomicBoolean(false);
+        promptRepository.findById(promptId).ifPresent(prompt -> {
+            var ownerId = Optional.ofNullable(prompt.getOwner()).map(User::getId).orElse(null);
+            var teamId = Optional.ofNullable(prompt.getTeam()).map(Team::getId).orElse(null);
+            canAccess.set(canAccessResource(ownerId, teamId, TeamRole.DEV, TeamRole.TEAM_OWNER));
+        });
+        return canAccess.get();
+    }
 
-    private boolean isTeamManagerOfPrompt(Long promptId, Long userId) {
-        return promptRepository.isTeamManagerOfPrompt(promptId, userId, rolesAllowed);
+    @Override
+    protected boolean canDeleteAsUser(Long promptId) {
+        var canEdit = new AtomicBoolean(false);
+        promptRepository.findById(promptId).ifPresent(prompt -> {
+            var ownerId = Optional.ofNullable(prompt.getOwner()).map(User::getId).orElse(null);
+            var teamId = Optional.ofNullable(prompt.getTeam()).map(Team::getId).orElse(null);
+            canEdit.set(canAccessResource(ownerId, teamId, TeamRole.TEAM_OWNER));
+        });
+        return canEdit.get();
     }
 }

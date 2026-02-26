@@ -4,11 +4,11 @@ import br.com.senior.prompthub.core.controller.BaseCrudController;
 import br.com.senior.prompthub.core.dto.PageParams;
 import br.com.senior.prompthub.core.dto.PageResult;
 import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
-import br.com.senior.prompthub.domain.dto.team.teamuser.input.AddMemberInput;
 import br.com.senior.prompthub.domain.dto.team.TeamInput;
-import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.input.TeamWithMemberInput;
-import br.com.senior.prompthub.domain.dto.team.teamuser.output.TeamMemberOutput;
 import br.com.senior.prompthub.domain.dto.team.TeamOutput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.input.AddMemberInput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.output.TeamMemberOutput;
+import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.input.TeamWithMemberInput;
 import br.com.senior.prompthub.domain.dto.team.teamuser.withmember.output.TeamWithMemberOutput;
 import br.com.senior.prompthub.domain.entity.Team;
 import br.com.senior.prompthub.domain.enums.EntityStatus;
@@ -32,51 +32,51 @@ public class TeamController {
     public TeamController(TeamService teamService,
                           ModelMapperService<Team> teamModelMapperService,
                           TeamSpecification teamSpecification) {
-        this.teamSpecification = teamSpecification;
         this.teamService = teamService;
+        this.teamSpecification = teamSpecification;
         this.crudController = new BaseCrudController<>(teamService, teamModelMapperService, Team.class);
     }
 
-    @GetMapping("")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin()")
+    @GetMapping
+    @PreAuthorize("@teamPermissionEvaluator.canList()")
     public ResponseEntity<PageResult<TeamOutput>> getAllTeams(PageParams pageParams, TeamSearch search) {
         return crudController.getAllSpec(pageParams, teamSpecification, search).asPageDto(TeamOutput.class);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamMember(#id)")
+    @PreAuthorize("@teamPermissionEvaluator.canView(#id)")
     public ResponseEntity<TeamOutput> getTeamById(@PathVariable Long id) {
         return crudController.getById(id).asDto(TeamOutput.class);
     }
 
     @PostMapping
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin()")
+    @PreAuthorize("@teamPermissionEvaluator.canCreate(#teamCreate)")
     public ResponseEntity<TeamOutput> createTeam(@Valid @RequestBody TeamInput teamCreate) {
         return crudController.create(teamCreate).asDto(TeamOutput.class);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#id)")
+    @PreAuthorize("@teamPermissionEvaluator.canEdit(#id)")
     public ResponseEntity<TeamOutput> updateTeam(@PathVariable Long id, @Valid @RequestBody TeamInput teamCreate) {
         return crudController.update(id, teamCreate).asDto(TeamOutput.class);
     }
 
     @PatchMapping("/{id}/change-status")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#id)")
+    @PreAuthorize("@teamPermissionEvaluator.canChangeStatus()")
     public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam EntityStatus status) {
         teamService.changeStatus(id, status);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/with-members")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin()")
+    @PreAuthorize("@teamPermissionEvaluator.canCreate(#teamCreate)")
     public ResponseEntity<TeamWithMemberOutput> createTeamWithMembers(@Valid @RequestBody TeamWithMemberInput teamCreate) {
         var teamWithMembers = teamService.createWithMembers(teamCreate);
         return ResponseEntity.ok(teamWithMembers);
     }
 
     @GetMapping("/{teamId}/members")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamMember(#teamId)")
+    @PreAuthorize("@memberPermissionEvaluator.canView(#teamId)")
     public ResponseEntity<PageResult<TeamMemberOutput>> getTeamMembers(@PathVariable Long teamId,
                                                                        PageParams pageParams,
                                                                        TeamUserSearch search) {
@@ -85,21 +85,21 @@ public class TeamController {
     }
 
     @PostMapping("/{teamId}/members")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#teamId)")
+    @PreAuthorize("@memberPermissionEvaluator.canCreate(#teamId)")
     public ResponseEntity<Void> addMember(@PathVariable Long teamId, @Valid @RequestBody AddMemberInput member) {
         teamService.addMember(teamId, member);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{teamId}/members/{userId}")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#teamId)")
+    @PreAuthorize("@memberPermissionEvaluator.canChangeRole()")
     public ResponseEntity<Void> updateMemberRole(@PathVariable Long teamId, @PathVariable Long userId, @RequestParam TeamRole role) {
         teamService.updateMemberRole(teamId, userId, role);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{teamId}/members/{userId}")
-    @PreAuthorize("@teamPermissionEvaluator.isAdmin() or @teamPermissionEvaluator.isTeamOwner(#teamId)")
+    @PreAuthorize("@memberPermissionEvaluator.canDelete(#teamId)")
     public ResponseEntity<Void> deleteMember(@PathVariable Long teamId, @PathVariable Long userId) {
         teamService.deleteMember(teamId, userId);
         return ResponseEntity.noContent().build();

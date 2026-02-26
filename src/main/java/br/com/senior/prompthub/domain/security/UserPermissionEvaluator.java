@@ -1,34 +1,51 @@
 package br.com.senior.prompthub.domain.security;
 
-import br.com.senior.prompthub.config.security.UserPrincipal;
-import lombok.RequiredArgsConstructor;
+import br.com.senior.prompthub.domain.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.util.Objects;
 
 /**
  * Bean que avalia permissões relacionadas a times.
  * Usado nas anotações @PreAuthorize dos controllers.
  */
 @Slf4j
-@RequiredArgsConstructor
 @Component("userPermissionEvaluator")
 public class UserPermissionEvaluator extends BasePermissionEvaluator {
-    /**
-     * Verifica se o usuário logado é membro do time.
-     * <p>
-     * Exemplo de uso:
-     *
-     * @PreAuthorize("@teamPermissionEvaluator.isTeamMember(#teamId)") Fluxo:
-     * 1. Pega o usuário logado do SecurityContext
-     * 2. Busca no banco se existe um registro TeamUser com teamId e userId
-     * 3. Retorna true se encontrar, false caso contrário
-     */
-    public boolean isUser(Long userId) {
-        UserPrincipal principal = getCurrentUser();
-        if (principal == null) {
-            log.info("Nenhum usuário autenticado encontrado");
-            return false;
+
+    public UserPermissionEvaluator(UserRepository userRepository) {
+        super(userRepository);
+    }
+
+    @Override
+    protected boolean canViewAsUser(Long userId) {
+        if (isAdmin()) {
+            return true;
         }
-        return userId.equals(principal.getId());
+        return Objects.equals(userId, getCurrentUserId());
+    }
+
+    @Override
+    protected boolean canCreateAsUser(Object resource) {
+        return false;
+    }
+
+    @Override
+    protected boolean canEditAsUser(Long userId) {
+        return Objects.equals(userId, getCurrentUserId());
+    }
+
+    @Override
+    protected boolean canDeleteAsUser(Long resourceId) {
+        return false;
+    }
+
+    public boolean canChangeStatus() {
+        return isAdmin();
+    }
+
+    public boolean canChangeRole() {
+        return isAdmin();
     }
 }
