@@ -40,11 +40,11 @@ CREATE TABLE IF NOT EXISTS dbo.prompt_versions
 (
     id           INTEGER PRIMARY KEY  DEFAULT nextval('dbo.prompt_versions_seq'),
     prompt_id    INTEGER     NOT NULL REFERENCES dbo.prompts (id),
-    version      VARCHAR(50) NOT NULL,
+    version      VARCHAR(3) NOT NULL,
     content      TEXT        NOT NULL,
     status       VARCHAR(30) NOT NULL DEFAULT 'DRAFT',
     visibility   VARCHAR(30) NOT NULL DEFAULT 'PRIVATE',
-    change_notes TEXT,
+    change_notes TEXT        NOT NULL,
     author_id    INTEGER REFERENCES dbo.users (id),
     created_at   TIMESTAMP,
     updated_at   TIMESTAMP,
