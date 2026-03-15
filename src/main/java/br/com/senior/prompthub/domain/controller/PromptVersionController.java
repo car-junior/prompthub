@@ -7,6 +7,8 @@ import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
 import br.com.senior.prompthub.domain.dto.promptversion.input.PromptVersionInput;
 import br.com.senior.prompthub.domain.dto.promptversion.output.PromptVersionOutput;
 import br.com.senior.prompthub.domain.entity.PromptVersion;
+import br.com.senior.prompthub.domain.enums.PromptVersionStatus;
+import br.com.senior.prompthub.domain.enums.PromptVersionVisibility;
 import br.com.senior.prompthub.domain.service.promptversion.PromptVersionService;
 import br.com.senior.prompthub.domain.spec.promptversion.PromptVersionSearch;
 import br.com.senior.prompthub.domain.spec.promptversion.PromptVersionSpecification;
@@ -19,12 +21,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/prompt-versions")
 public class PromptVersionController {
 
+    private final PromptVersionService promptVersionService;
     private final PromptVersionSpecification promptVersionSpecification;
     private final BaseCrudController<PromptVersion, Long> crudController;
 
     public PromptVersionController(PromptVersionService promptVersionService,
                                    ModelMapperService<PromptVersion> promptVersionModelMapperService,
                                    PromptVersionSpecification promptVersionSpecification) {
+        this.promptVersionService = promptVersionService;
         this.promptVersionSpecification = promptVersionSpecification;
         this.crudController = new BaseCrudController<>(promptVersionService, promptVersionModelMapperService, PromptVersion.class);
     }
@@ -51,5 +55,19 @@ public class PromptVersionController {
     @PreAuthorize("@promptVersionPermissionEvaluator.canEdit(#id)")
     public ResponseEntity<PromptVersionOutput> updateVersion(@PathVariable Long id, @Valid @RequestBody PromptVersionInput input) {
         return crudController.update(id, input).asDto(PromptVersionOutput.class);
+    }
+
+    @PatchMapping("/{id}/change-status")
+    @PreAuthorize("@promptVersionPermissionEvaluator.canEdit(#id)")
+    public ResponseEntity<Void> changeStatus(@PathVariable Long id, @RequestParam PromptVersionStatus status) {
+        promptVersionService.changeStatus(id, status);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/change-visibility")
+    @PreAuthorize("@promptVersionPermissionEvaluator.canEdit(#id)")
+    public ResponseEntity<Void> changeVisibility(@PathVariable Long id, @RequestParam PromptVersionVisibility visibility) {
+        promptVersionService.changeVisibility(id, visibility);
+        return ResponseEntity.noContent().build();
     }
 }

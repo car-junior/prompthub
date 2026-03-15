@@ -7,8 +7,11 @@ import br.com.senior.prompthub.core.service.modelmapper.ModelMapperService;
 import br.com.senior.prompthub.core.service.validate.CrudInterceptor;
 import br.com.senior.prompthub.domain.entity.PromptVersion;
 import br.com.senior.prompthub.domain.entity.User;
+import br.com.senior.prompthub.domain.enums.PromptVersionStatus;
+import br.com.senior.prompthub.domain.enums.PromptVersionVisibility;
 import br.com.senior.prompthub.domain.repository.PromptVersionRepository;
 import br.com.senior.prompthub.domain.repository.UserRepository;
+import br.com.senior.prompthub.infrastructure.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,23 @@ public class PromptVersionService extends AbstractBaseService<PromptVersion, Lon
         promptVersion.setVersion(getNextVersion(promptVersion));
         promptVersion.setAuthor(getUser());
         return super.create(promptVersion);
+    }
+
+    @Transactional
+    public void changeStatus(Long id, PromptVersionStatus status) {
+        var version = getById(id);
+        if (version.getStatus() == PromptVersionStatus.DELETED) {
+            throw CustomException.badRequest("Não é possível alterar o status de uma versão deletada.");
+        }
+        version.setStatus(status);
+        promptVersionRepository.save(version);
+    }
+
+    @Transactional
+    public void changeVisibility(Long id, PromptVersionVisibility visibility) {
+        var version = getById(id);
+        version.setVisibility(visibility);
+        promptVersionRepository.save(version);
     }
 
     private String getNextVersion(PromptVersion promptVersion) {
