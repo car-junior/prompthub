@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -17,6 +18,7 @@ public class PromptOutput {
     private String description;
     private UserOutput owner;
     private TeamOutput team;
+    private List<TagOutput> tags;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

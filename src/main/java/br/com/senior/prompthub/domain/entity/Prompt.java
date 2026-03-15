@@ -5,7 +5,7 @@ import br.com.senior.prompthub.core.service.modelmapper.NoUpdateMapping;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -36,6 +36,15 @@ public class Prompt extends Auditable {
 
     @Column(name = "description")
     private String description;
+
+    @ManyToMany
+    @JoinTable(
+            name = "prompt_tags",
+            schema = "dbo",
+            joinColumns = @JoinColumn(name = "prompt_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<Tag> tags = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {

@@ -107,3 +107,166 @@ VALUES
     (nextval('dbo.prompt_versions_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Otimização de Queries'), (SELECT id FROM dbo.users WHERE username = 'pedro.costa'), 'V1', 'Analise a query SQL a seguir e sugira otimizações.', 'Versão inicial', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
     (nextval('dbo.prompt_versions_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Otimização de Queries'), (SELECT id FROM dbo.users WHERE username = 'pedro.costa'), 'V2', 'Analise a query SQL a seguir. Identifique gargalos, sugira índices, reescreva se necessário e explique o impacto de cada mudança.', 'Análise mais detalhada com sugestão de índices', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
 ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- 7. TAGS
+-- ============================================
+INSERT INTO dbo.tags (name, slug, description, created_at, updated_at)
+VALUES
+    -- Categorias de Funcionalidade
+    ('Code Generation', 'code-generation', 'Geração automática de código', NOW(), NOW()),
+    ('Code Review', 'code-review', 'Revisão e análise de código', NOW(), NOW()),
+    ('Refactoring', 'refactoring', 'Refatoração e melhoria de código', NOW(), NOW()),
+    ('Bug Fixing', 'bug-fixing', 'Identificação e correção de bugs', NOW(), NOW()),
+    ('Testing', 'testing', 'Geração e melhoria de testes', NOW(), NOW()),
+    ('Unit Testing', 'unit-testing', 'Testes unitários', NOW(), NOW()),
+    ('Integration Testing', 'integration-testing', 'Testes de integração', NOW(), NOW()),
+    ('E2E Testing', 'e2e-testing', 'Testes end-to-end', NOW(), NOW()),
+    ('Test Automation', 'test-automation', 'Automação de testes', NOW(), NOW()),
+    ('TDD', 'tdd', 'Test-Driven Development', NOW(), NOW()),
+    ('BDD', 'bdd', 'Behavior-Driven Development', NOW(), NOW()),
+    ('Mocking', 'mocking', 'Criação de mocks e stubs', NOW(), NOW()),
+    ('Documentation', 'documentation', 'Geração de documentação', NOW(), NOW()),
+    ('Code Explanation', 'code-explanation', 'Explicação de código existente', NOW(), NOW()),
+    ('Optimization', 'optimization', 'Otimização de performance', NOW(), NOW()),
+    ('SDL', 'sdl', 'Prompts/Instruct para SDL', NOW(), NOW()),
+    ('PDL', 'pdl', 'Prompts/Instruct para PDL', NOW(), NOW()),
+    ('EDL', 'edl', 'Prompts/Instruct para EDL', NOW(), NOW()),
+    -- Tipos de Desenvolvimento
+    ('API Development', 'api-development', 'Desenvolvimento de APIs', NOW(), NOW()),
+    ('Frontend', 'frontend', 'Desenvolvimento frontend', NOW(), NOW()),
+    ('Backend', 'backend', 'Desenvolvimento backend', NOW(), NOW()),
+    ('Database', 'database', 'Queries e modelagem de dados', NOW(), NOW()),
+    ('DevOps', 'devops', 'Automação e infraestrutura', NOW(), NOW()),
+    ('Mobile', 'mobile', 'Desenvolvimento mobile', NOW(), NOW()),
+    -- Linguagens de Programação
+    ('Java', 'java', 'Linguagem Java', NOW(), NOW()),
+    ('Python', 'python', 'Linguagem Python', NOW(), NOW()),
+    ('JavaScript', 'javascript', 'Linguagem JavaScript', NOW(), NOW()),
+    ('TypeScript', 'typescript', 'Linguagem TypeScript', NOW(), NOW()),
+    ('SQL', 'sql', 'Linguagem SQL', NOW(), NOW()),
+    ('Go', 'go', 'Linguagem Go', NOW(), NOW()),
+    ('Rust', 'rust', 'Linguagem Rust', NOW(), NOW()),
+    ('C#', 'csharp', 'Linguagem C#', NOW(), NOW()),
+    ('DELPHI', 'delphi', 'Linguagem Delphi', NOW(), NOW()),
+    -- Frameworks e Tecnologias
+    ('Spring Boot', 'spring-boot', 'Framework Spring Boot', NOW(), NOW()),
+    ('React', 'react', 'Biblioteca React', NOW(), NOW()),
+    ('Angular', 'angular', 'Framework Angular', NOW(), NOW()),
+    ('Vue.js', 'vuejs', 'Framework Vue.js', NOW(), NOW()),
+    ('Node.js', 'nodejs', 'Runtime Node.js', NOW(), NOW()),
+    ('Django', 'django', 'Framework Django', NOW(), NOW()),
+    ('Flask', 'flask', 'Framework Flask', NOW(), NOW()),
+    ('Docker', 'docker', 'Containerização Docker', NOW(), NOW()),
+    ('Kubernetes', 'kubernetes', 'Orquestração Kubernetes', NOW(), NOW()),
+    ('JUnit', 'junit', 'Framework JUnit', NOW(), NOW()),
+    ('Jest', 'jest', 'Framework Jest', NOW(), NOW()),
+    ('Pytest', 'pytest', 'Framework Pytest', NOW(), NOW()),
+    ('Selenium', 'selenium', 'Framework Selenium', NOW(), NOW()),
+    ('Cypress', 'cypress', 'Framework Cypress', NOW(), NOW()),
+    -- Padrões e Arquitetura
+    ('Design Patterns', 'design-patterns', 'Padrões de projeto', NOW(), NOW()),
+    ('Clean Code', 'clean-code', 'Código limpo e boas práticas', NOW(), NOW()),
+    ('SOLID', 'solid', 'Princípios SOLID', NOW(), NOW()),
+    ('Microservices', 'microservices', 'Arquitetura de microsserviços', NOW(), NOW()),
+    ('REST API', 'rest-api', 'APIs RESTful', NOW(), NOW()),
+    ('GraphQL', 'graphql', 'APIs GraphQL', NOW(), NOW()),
+    -- Segurança
+    ('Security', 'security', 'Segurança da informação', NOW(), NOW()),
+    ('Authentication', 'authentication', 'Autenticação de usuários', NOW(), NOW()),
+    ('Authorization', 'authorization', 'Autorização e permissões', NOW(), NOW()),
+    ('Encryption', 'encryption', 'Criptografia', NOW(), NOW()),
+    -- Data Science e AI
+    ('Machine Learning', 'machine-learning', 'Aprendizado de máquina', NOW(), NOW()),
+    ('Data Analysis', 'data-analysis', 'Análise de dados', NOW(), NOW()),
+    ('AI Assistant', 'ai-assistant', 'Assistentes de IA', NOW(), NOW()),
+    ('Natural Language', 'natural-language', 'Processamento de linguagem natural', NOW(), NOW()),
+    -- Utilidades
+    ('Automation', 'automation', 'Automação de tarefas', NOW(), NOW()),
+    ('CLI Tools', 'cli-tools', 'Ferramentas de linha de comando', NOW(), NOW()),
+    ('Debugging', 'debugging', 'Depuração de código', NOW(), NOW()),
+    ('Performance', 'performance', 'Análise de performance', NOW(), NOW()),
+    ('Migration', 'migration', 'Migração de código ou dados', NOW(), NOW()),
+    -- Níveis de Complexidade
+    ('Beginner', 'beginner', 'Nível iniciante', NOW(), NOW()),
+    ('Intermediate', 'intermediate', 'Nível intermediário', NOW(), NOW()),
+    ('Advanced', 'advanced', 'Nível avançado', NOW(), NOW()),
+    -- Status e Uso
+    ('Production Ready', 'production-ready', 'Pronto para produção', NOW(), NOW()),
+    ('Experimental', 'experimental', 'Experimental', NOW(), NOW()),
+    ('Template', 'template', 'Template reutilizável', NOW(), NOW()),
+    ('Snippet', 'snippet', 'Trecho de código', NOW(), NOW())
+ON CONFLICT DO NOTHING;
+
+-- ============================================
+-- 8. PROMPT TAGS
+-- ============================================
+INSERT INTO dbo.prompt_tags (id, prompt_id, tag_id, created_at, updated_at)
+VALUES
+    -- Análise de Código Java -> Java, Code Review, Spring Boot
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Análise de Código Java'), (SELECT id FROM dbo.tags WHERE slug = 'java'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Análise de Código Java'), (SELECT id FROM dbo.tags WHERE slug = 'code-review'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Análise de Código Java'), (SELECT id FROM dbo.tags WHERE slug = 'backend'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Geração de Testes Unitários -> Testing, Unit Testing, Java, JUnit
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Geração de Testes Unitários'), (SELECT id FROM dbo.tags WHERE slug = 'unit-testing'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Geração de Testes Unitários'), (SELECT id FROM dbo.tags WHERE slug = 'java'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Geração de Testes Unitários'), (SELECT id FROM dbo.tags WHERE slug = 'junit'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Documentação de API -> Documentation, REST API, API Development
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Documentação de API'), (SELECT id FROM dbo.tags WHERE slug = 'documentation'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Documentação de API'), (SELECT id FROM dbo.tags WHERE slug = 'rest-api'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Documentação de API'), (SELECT id FROM dbo.tags WHERE slug = 'api-development'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Componente React -> React, Frontend, TypeScript
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Componente React'), (SELECT id FROM dbo.tags WHERE slug = 'react'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Componente React'), (SELECT id FROM dbo.tags WHERE slug = 'frontend'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Componente React'), (SELECT id FROM dbo.tags WHERE slug = 'typescript'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Validação de Formulário -> Frontend, JavaScript
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Validação de Formulário'), (SELECT id FROM dbo.tags WHERE slug = 'frontend'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Validação de Formulário'), (SELECT id FROM dbo.tags WHERE slug = 'javascript'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Pipeline CI/CD -> DevOps, Docker, Automation
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Pipeline CI/CD'), (SELECT id FROM dbo.tags WHERE slug = 'devops'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Pipeline CI/CD'), (SELECT id FROM dbo.tags WHERE slug = 'docker'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Pipeline CI/CD'), (SELECT id FROM dbo.tags WHERE slug = 'automation'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Dockerfile Otimizado -> Docker, DevOps
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Dockerfile Otimizado'), (SELECT id FROM dbo.tags WHERE slug = 'docker'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Dockerfile Otimizado'), (SELECT id FROM dbo.tags WHERE slug = 'devops'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Casos de Teste -> Testing, TDD
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Casos de Teste'), (SELECT id FROM dbo.tags WHERE slug = 'testing'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Casos de Teste'), (SELECT id FROM dbo.tags WHERE slug = 'tdd'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Testes E2E -> E2E Testing, Selenium, Cypress
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Testes E2E'), (SELECT id FROM dbo.tags WHERE slug = 'e2e-testing'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Testes E2E'), (SELECT id FROM dbo.tags WHERE slug = 'cypress'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Meu Prompt de Estudo -> Beginner, Code Explanation
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Meu Prompt de Estudo'), (SELECT id FROM dbo.tags WHERE slug = 'code-explanation'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Meu Prompt de Estudo'), (SELECT id FROM dbo.tags WHERE slug = 'beginner'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Refatoração Pessoal -> Refactoring, Clean Code
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Refatoração Pessoal'), (SELECT id FROM dbo.tags WHERE slug = 'refactoring'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Refatoração Pessoal'), (SELECT id FROM dbo.tags WHERE slug = 'clean-code'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Aprendizado de Design Patterns -> Design Patterns, SOLID
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Aprendizado de Design Patterns'), (SELECT id FROM dbo.tags WHERE slug = 'design-patterns'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Aprendizado de Design Patterns'), (SELECT id FROM dbo.tags WHERE slug = 'solid'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Otimização de Queries -> SQL, Database, Performance
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Otimização de Queries'), (SELECT id FROM dbo.tags WHERE slug = 'sql'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Otimização de Queries'), (SELECT id FROM dbo.tags WHERE slug = 'database'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Otimização de Queries'), (SELECT id FROM dbo.tags WHERE slug = 'performance'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Code Review Pessoal -> Code Review, Clean Code
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Code Review Pessoal'), (SELECT id FROM dbo.tags WHERE slug = 'code-review'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Code Review Pessoal'), (SELECT id FROM dbo.tags WHERE slug = 'clean-code'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+
+    -- Kubernetes Helper -> Kubernetes, DevOps
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Kubernetes Helper'), (SELECT id FROM dbo.tags WHERE slug = 'kubernetes'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    (nextval('dbo.prompt_tags_seq'), (SELECT id FROM dbo.prompts WHERE name = 'Kubernetes Helper'), (SELECT id FROM dbo.tags WHERE slug = 'devops'), CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+
+ON CONFLICT DO NOTHING;
