@@ -1,0 +1,1495 @@
+{
+	"info": {
+		"name": "PromptHub - Prompts API",
+		"description": "Collection para testar a API de Prompts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "promptId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "teamId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "versionId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tagId",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('Status code:', pm.response.code);",
+									"console.log('Response body:', pm.response.text());",
+									"",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        var jsonData = pm.response.json();",
+									"        console.log('JSON parsed:', JSON.stringify(jsonData));",
+									"        ",
+									"        if (jsonData.token) {",
+									"            pm.collectionVariables.set('token', jsonData.token);",
+									"            console.log('Token salvo com sucesso:', jsonData.token);",
+									"        } else {",
+									"            console.log('Token não encontrado na resposta');",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Erro ao processar resposta:', e);",
+									"    }",
+									"} else {",
+									"    console.log('Status code diferente de 200');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"password\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"joao.silva\",\n  \"email\": \"joao@email.com\",\n  \"password\": \"senha123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "register"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Prompts - Team",
+			"item": [
+				{
+					"name": "Criar Prompt de Time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('Status code:', pm.response.code);",
+									"",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        var jsonData = pm.response.json();",
+									"        console.log('Response:', JSON.stringify(jsonData));",
+									"        ",
+									"        if (jsonData.id) {",
+									"            pm.collectionVariables.set('promptId', jsonData.id);",
+									"            console.log('Prompt ID salvo:', jsonData.id);",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Erro:', e);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"teamId\": 1,\n  \"name\": \"Prompt de Análise de Código\",\n  \"description\": \"Prompt para revisar código e sugerir melhorias\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Prompts do Time",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts?teamId=1&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"],
+							"query": [
+								{
+									"key": "teamId",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Prompt por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts/{{promptId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts", "{{promptId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Prompt de Time",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"teamId\": 1,\n  \"name\": \"Prompt de Análise de Código - Atualizado\",\n  \"description\": \"Prompt atualizado para revisar código com foco em performance\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts/{{promptId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts", "{{promptId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Prompt de Time",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts/{{promptId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts", "{{promptId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Prompts - Personal",
+			"item": [
+				{
+					"name": "Criar Prompt Pessoal",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.collectionVariables.set('promptId', jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ownerId\": 1,\n  \"name\": \"Meu Prompt Pessoal\",\n  \"description\": \"Prompt para uso pessoal\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Prompts Pessoais",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts?ownerId=1&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"],
+							"query": [
+								{
+									"key": "ownerId",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Prompt Pessoal",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ownerId\": 1,\n  \"name\": \"Meu Prompt Pessoal - Atualizado\",\n  \"description\": \"Descrição atualizada\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts/{{promptId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts", "{{promptId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Testes de Validação",
+			"item": [
+				{
+					"name": "Erro - Criar sem teamId e ownerId",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Prompt Inválido\",\n  \"description\": \"Sem teamId nem ownerId\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Erro - Criar com ambos teamId e ownerId",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"teamId\": 1,\n  \"ownerId\": 1,\n  \"name\": \"Prompt Inválido\",\n  \"description\": \"Com teamId E ownerId\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Erro - Nome duplicado no time",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"teamId\": 1,\n  \"name\": \"Prompt de Análise de Código\",\n  \"description\": \"Nome duplicado\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Erro - Sem autenticação",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5. Busca e Filtros",
+			"item": [
+				{
+					"name": "Buscar por nome",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts?name=Análise&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"],
+							"query": [
+								{
+									"key": "name",
+									"value": "Análise"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar todos os prompts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompts?page=0&size=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompts"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "6. Teams",
+			"item": [
+				{
+					"name": "Criar Time",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('Status code:', pm.response.code);",
+									"",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        var jsonData = pm.response.json();",
+									"        console.log('Response:', JSON.stringify(jsonData));",
+									"        ",
+									"        if (jsonData.id) {",
+									"            pm.collectionVariables.set('teamId', jsonData.id);",
+									"            console.log('Team ID salvo:', jsonData.id);",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Erro:', e);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Time de Desenvolvimento\",\n  \"description\": \"Time responsável pelo desenvolvimento de features\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/teams",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Times",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/teams?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Time por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Time",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Time de Desenvolvimento - Atualizado\",\n  \"description\": \"Descrição atualizada do time\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Status do Time",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}/change-status?status=INACTIVE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}", "change-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "INACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Time com Membros",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Time Backend\",\n  \"description\": \"Time de desenvolvimento backend\",\n  \"members\": [\n    {\n      \"userId\": 2,\n      \"role\": \"MEMBER\"\n    },\n    {\n      \"userId\": 3,\n      \"role\": \"ADMIN\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/with-members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "with-members"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "7. Team Members",
+			"item": [
+				{
+					"name": "Listar Membros do Time",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}/members?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}", "members"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Adicionar Membro ao Time",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": 2,\n  \"role\": \"MEMBER\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}/members",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}", "members"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Role do Membro",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}/members/2?role=ADMIN",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}", "members", "2"],
+							"query": [
+								{
+									"key": "role",
+									"value": "ADMIN"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remover Membro do Time",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/teams/{{teamId}}/members/2",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "teams", "{{teamId}}", "members", "2"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8. Users",
+			"item": [
+				{
+					"name": "Listar Usuários",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Usuário por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Usuário",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"admin\",\n  \"email\": \"admin@email.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/1",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "1"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Status do Usuário",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/2?status=INACTIVE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "2", "change-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "INACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Role Global do Usuário",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/2/change-role?role=ADMIN",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "2", "change-role"],
+							"query": [
+								{
+									"key": "role",
+									"value": "ADMIN"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Prompt Versions",
+			"item": [
+				{
+					"name": "Criar Versão",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"console.log('Status code:', pm.response.code);",
+									"if (pm.response.code === 200) {",
+									"    try {",
+									"        var jsonData = pm.response.json();",
+									"        console.log('Response:', JSON.stringify(jsonData));",
+									"        if (jsonData.id) {",
+									"            pm.collectionVariables.set('versionId', jsonData.id);",
+									"            console.log('Version ID salvo:', jsonData.id);",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Erro:', e);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prompt\": {\n    \"id\": 1\n  },\n  \"content\": \"Analise o código Java a seguir e aponte problemas de qualidade, performance e segurança.\",\n  \"changeNotes\": \"Versão inicial do prompt de análise\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Versões",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions?page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions"],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Listar Versões por Prompt",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions?promptId=1&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions"],
+							"query": [
+								{
+									"key": "promptId",
+									"value": "1"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Versão por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Versão",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prompt\": {\n    \"id\": 1\n  },\n  \"content\": \"Analise o código Java a seguir. Aponte problemas de qualidade, performance e segurança. Sugira refatorações com exemplos práticos.\",\n  \"changeNotes\": \"Adicionado sugestão de refatorações\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar por conteúdo (query)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions?query=Java&page=0&size=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions"],
+							"query": [
+								{
+									"key": "query",
+									"value": "Java"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Erro - Criar sem prompt",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"content\": \"Conteúdo sem prompt\",\n  \"changeNotes\": \"Sem prompt\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Erro - Criar sem content",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prompt\": {\n    \"id\": 1\n  },\n  \"changeNotes\": \"Sem content\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Status - ACTIVE",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-status?status=ACTIVE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Status - INACTIVE",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-status?status=INACTIVE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "INACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Status - DEPRECATED",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-status?status=DEPRECATED",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "DEPRECATED"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Erro - Mudar Status de DELETED",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-status?status=ACTIVE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-status"],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Visibilidade - INTERNAL",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-visibility?visibility=INTERNAL",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-visibility"],
+							"query": [
+								{
+									"key": "visibility",
+									"value": "INTERNAL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Visibilidade - PUBLIC",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-visibility?visibility=PUBLIC",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-visibility"],
+							"query": [
+								{
+									"key": "visibility",
+									"value": "PUBLIC"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mudar Visibilidade - PRIVATE",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/prompt-versions/{{versionId}}/change-visibility?visibility=PRIVATE",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "prompt-versions", "{{versionId}}", "change-visibility"],
+							"query": [
+								{
+									"key": "visibility",
+									"value": "PRIVATE"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "10. Tags",
+			"item": [
+				{
+					"name": "Listar Tags",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/tags?page=0&itemsPerPage=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "tags"],
+							"query": [
+								{ "key": "page", "value": "0" },
+								{ "key": "itemsPerPage", "value": "10" },
+								{ "key": "query", "value": "", "disabled": true }
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Buscar Tag por ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/tags/{{tagId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "tags", "{{tagId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Criar Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200 || pm.response.code === 201) {",
+									"    try {",
+									"        var jsonData = pm.response.json();",
+									"        if (jsonData.id) {",
+									"            pm.collectionVariables.set('tagId', jsonData.id);",
+									"            console.log('tagId salvo:', jsonData.id);",
+									"        }",
+									"    } catch (e) {",
+									"        console.log('Erro ao processar resposta:', e);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Inteligência Artificial\",\n  \"slug\": \"inteligencia-artificial\",\n  \"description\": \"Prompts relacionados a IA e machine learning\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/tags",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "tags"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Atualizar Tag",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{ "key": "Content-Type", "value": "application/json" },
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"IA e Machine Learning\",\n  \"slug\": \"ia-machine-learning\",\n  \"description\": \"Prompts para IA, ML e deep learning\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/tags/{{tagId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "tags", "{{tagId}}"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletar Tag",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{ "key": "Authorization", "value": "Bearer {{token}}" }
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/tags/{{tagId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "tags", "{{tagId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "11. Auth - Extras",
+			"item": [
+				{
+					"name": "Trocar Senha",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"oldPassword\": \"senha123\",\n  \"newPassword\": \"novaSenha123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/change-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "auth", "change-password"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
